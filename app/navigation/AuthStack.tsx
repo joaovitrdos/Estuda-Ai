@@ -4,6 +4,7 @@ import  RegisterScreen  from "../../src/screens/auth/RegisterScreen";
 import  ProfileScreen from "../../src/screens/ProfileScreen";
 import  AppTabs from "./AppTabs";
 import  OptionsScreen  from "../../src/screens/OptionsScreen";
+import  SobreScreen  from "../../src/screens/SobreScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -18,6 +19,7 @@ export default function AuthStack() {
       <Stack.Screen name="tabs" component={AppTabs} />
       <Stack.Screen name="optionsscreen" component={OptionsScreen} />
       <Stack.Screen name="profilescreen" component={ProfileScreen} />
+      <Stack.Screen name="sobrescreen" component={SobreScreen} />
       <Stack.Screen name="loginscreen" component={LoginScreen} />
       <Stack.Screen name="registerscreen" component={RegisterScreen} />
     </Stack.Navigator>

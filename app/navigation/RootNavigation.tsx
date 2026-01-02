@@ -28,7 +28,7 @@ export function RootNavigator() {
   return (
     <NavigationContainer>
       {user ? <AppTabs /> : <AuthStack />}
-      {/* <ProfileScreen /> */}
+      {/* <LoginScreen /> */}
     </NavigationContainer>
   );
 }

@@ -68,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Login
   async function signIn(email: string, senha: string) {
-    const response = await fetch('http://10.0.2.2:8000/api/login', {
+    const response = await fetch('http://localhost:8000/api/login', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({ email, senha }),
@@ -91,7 +91,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
   // Registro
   async function signUp(nome: string, email: string, senha: string) {
-    const response = await fetch('http://10.0.2.2:8000/api/registrar', {
+    const response = await fetch('http://localhost:8000/api/registrar', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json', Accept: 'application/json' },
       body: JSON.stringify({ nome, email, senha }),
@@ -124,7 +124,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   async function loadProfile() {
     if (!token) return;
     try {
-      const response = await fetch('http://10.0.2.2:8000/api/user/profile', {
+      const response = await fetch('http://localhost:8000/api/user/profile', {
         method: 'GET',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
       });
@@ -148,7 +148,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     if (!token) return;
 
     try {
-      const response = await fetch('http://10.0.2.2:8000/api/user/avatar', {
+      const response = await fetch('http://localhost:8000/api/user/avatar', {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
         body: JSON.stringify({ avatar_index: index }),

@@ -18,49 +18,69 @@ export const BackButton: React.FC<BackButtonProps> = ({
 
   return (
     <View style={styles.container}>
-      {/* Botão de voltar opcional */}
       
-      {showBackButton && (
-        <View style={{ width: 60}}>
-        <TouchableOpacity
-          onPress={() => navigation.goBack()}
-          style={styles.button}
-        >
-          <Image
-            source={require('../styles/icons/left.png')}
-            style={styles.image}
-          />
-        </TouchableOpacity>
-        </View>
-      )}
+      {/* Lado esquerdo (botão voltar) */}
+      <View style={styles.side}>
+        {showBackButton && (
+          <TouchableOpacity
+            onPress={() => navigation.goBack()}
+            style={styles.backButton}
+            activeOpacity={0.7}
+          >
+            <Image
+              source={require('../styles/icons/left.png')}
+              style={styles.image}
+            />
+          </TouchableOpacity>
+        )}
+      </View>
 
-      {/* Título centralizado */}
-      {showTitle && <Text style={styles.title}>{titleText}</Text>}
+      {/* Centro (título) */}
+      <View style={styles.center}>
+        {showTitle && <Text style={styles.title}>{titleText}</Text>}
+      </View>
+
+      {/* Lado direito (placeholder para centralizar) */}
+      <View style={styles.side} />
     </View>
   );
 };
-
 const styles = StyleSheet.create({
   container: {
-    position: 'absolute',
-    top: 40,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 15, // padding lateral
-    height: 50,
-    justifyContent: 'center', // centraliza verticalmente
+    flexDirection: 'row',
+    alignItems: 'center',
+    height: 100,
+    paddingHorizontal: 12,
+    backgroundColor: Theme.colors.background,
   },
 
-  button: {
-    position: 'absolute',
-    top: 0,  // ajusta verticalmente dentro da altura do container
+  side: {
+    width: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
+
+  backButton: {
+    width: 48,
+    height: 48,
+    borderRadius: 24,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+
   image: {
-    width: 30,
-    height: 30,
+    width: 24,
+    height: 24,
+    resizeMode: 'contain',
   },
+
+  center: {
+    flex: 1,
+    justifyContent: 'center', // 🔥 garante centro vertical
+    alignItems: 'center',
+  },
+
   title: {
-    textAlign: 'center', // centraliza horizontalmente
     fontSize: Theme.fontSize.lg,
     fontWeight: 'bold',
     color: Theme.colors.text,

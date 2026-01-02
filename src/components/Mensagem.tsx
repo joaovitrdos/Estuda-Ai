@@ -4,6 +4,7 @@ import { Theme } from '../styles/themes/themes';
 import { Input } from './input';
 import { ButtonCancel } from './ButtonCancel';
 import { AuthContext } from '../contexts/AuthContexts';
+import { useAlert } from '../hooks/useAlertModal';
 
 // lista de avatares
 const avatars = [
@@ -22,13 +23,23 @@ const avatars = [
 ];
 
 export default function Mensagem() {
+
+  const { showAlert } = useAlert();
   const { user, avatarIndex } = useContext(AuthContext);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [tema, setTema] = useState('');
 
   const handleGenerate = () => {
+    if (!tema.trim()) {
+      showAlert('Atenção', 'Informe um tema válido');
+      return;
+    }
+
     console.log('Tema adicionado:', tema);
+
+    showAlert('Sucesso', 'Tema adicionado com sucesso');
+
     setTema('');
     setModalVisible(false);
   };
@@ -38,7 +49,7 @@ export default function Mensagem() {
       <View style={styles.row}>
         <View style={styles.userInfo}>
           <Image
-            source={avatars[avatarIndex]} 
+            source={avatars[avatarIndex]}
             style={styles.avatar}
           />
           <View style={styles.userDetails}>

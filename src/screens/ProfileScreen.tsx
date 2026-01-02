@@ -5,6 +5,7 @@ import { useContext, useState } from 'react';
 import { AuthContext } from '../contexts/AuthContexts';
 import { Feather } from '@expo/vector-icons';
 import { ButtonCancel } from '../components/ButtonCancel';
+import { useAlert } from '../hooks/useAlertModal';
 
 const avatars = [
   require('../styles/avatar/1.jpg'),
@@ -22,17 +23,22 @@ const avatars = [
 ];
 
 export default function ProfileScreen() {
+
+  const { showAlert } = useAlert();
   const { user, avatarIndex, updateAvatar } = useContext(AuthContext);
+  
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState(avatarIndex);
 
   const handleConfirm = async () => {
     try {
       await updateAvatar(selectedAvatar);
-      Alert.alert('Sucesso', 'Avatar atualizado!');
+
+      showAlert('Sucesso', 'Avatar atualizado com sucesso');
       setModalVisible(false);
+
     } catch {
-      Alert.alert('Erro', 'Não foi possível atualizar o avatar.');
+      showAlert('Erro', 'Não foi possível atualizar o avatar.');
     }
   };
 
@@ -111,7 +117,7 @@ const styles = StyleSheet.create({
   content: {
     width: '100%',
     alignItems: 'center',
-    paddingTop: 100,
+    paddingTop: 30,
   },
   avatar: {
     width: 140,

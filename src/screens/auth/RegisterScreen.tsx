@@ -1,4 +1,12 @@
-import { View, Text, StyleSheet, Alert, Image } from 'react-native';
+import {
+    View,
+    Text,
+    StyleSheet,
+    Image,
+    ScrollView,
+    KeyboardAvoidingView,
+    Platform,
+} from 'react-native';
 import { useContext, useState } from 'react';
 import { Theme } from '../../styles/themes/themes';
 import { Input } from '../../components/input';
@@ -6,110 +14,137 @@ import { Button } from '../../components/Button';
 import { Divider } from '../../components/Divider';
 import { BackButton } from '../../components/Backbutton';
 import { AuthContext } from '../../contexts/AuthContexts';
+import { useAlert } from '../../hooks/useAlertModal';
 
 export default function RegisterScreen({ navigation }: any) {
 
+    const { showAlert } = useAlert();
+    const { signUp } = useContext(AuthContext);
+    
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
     const [loading, setLoading] = useState(false);
-    const { signUp } = useContext(AuthContext);
 
     async function handleRegister() {
         try {
+            setLoading(true);
+
+            if (!nome || !email || !senha) {
+                showAlert('Atenção', 'Preencha todos os campos');
+                return;
+            }
+
             await signUp(nome, email, senha);
+
+            showAlert('Sucesso', 'Conta criada com sucesso 🎉');
             navigation.navigate('loginscreen');
+
         } catch (e: any) {
-            Alert.alert('Erro', e.message);
+            showAlert('Erro', e.message || 'Erro ao criar conta');
+        } finally {
+            setLoading(false);
         }
     }
 
     return (
-        <View style={styles.container}>
-          <BackButton 
-            showTitle={false}
-          />
+        <View style={styles.safe}>
+            <BackButton showTitle titleText="Cadastrar" showBackButton />
 
-            <View style={styles.header}>
-                <Image
-                    source={require('../../../assets/favicon.png')}
-                    style={{ width: 100, height: 100, marginBottom: 16 }}
-                />
-                <Text style={styles.title}>
-                    Cadastrar
-                </Text>
+            <KeyboardAvoidingView
+                style={{ flex: 1 }}
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+            >
+                <ScrollView
+                    contentContainerStyle={[styles.container, { flexGrow: 1 }]}
+                    keyboardShouldPersistTaps="handled"
+                    showsVerticalScrollIndicator={false}
+                >
+                    <View style={styles.header}>
+                        <Image
+                            source={require('../../../assets/favicon.png')}
+                            style={styles.logo}
+                        />
 
-                <Text style={styles.subtitle}>
-                    Você Terá respostas mais rápidas e precisas e muito inteligentes.
-                </Text>
-            </View>
+                        <Text style={styles.title}>Cadastrar</Text>
 
-              <Input
-                placeholder="Nome"
-                value={nome}
-                onChangeText={setNome}
-            />
+                        <Text style={styles.subtitle}>
+                            Você terá respostas mais rápidas e precisas e muito inteligentes.
+                        </Text>
+                    </View>
 
-            <Input
-                placeholder="Email"
-                keyboardType="email-address"
-                value={email}
-                onChangeText={setEmail}
-            />
+                    <Input
+                        placeholder="Nome"
+                        value={nome}
+                        onChangeText={setNome}
+                    />
 
-            <Input
-                placeholder="Senha"
-                secureTextEntry
-                value={senha}
-                onChangeText={setSenha}
-            />
+                    <Input
+                        placeholder="Email"
+                        keyboardType="email-address"
+                        value={email}
+                        onChangeText={setEmail}
+                    />
 
-            <Button
-                title={loading ? 'Carregando...' : 'Entrar'}
-                onPress={handleRegister}
-            />
+                    <Input
+                        placeholder="Senha"
+                        secureTextEntry
+                        value={senha}
+                        onChangeText={setSenha}
+                    />
 
-            <Divider />
+                    <Button
+                        title={loading ? 'Carregando...' : 'Cadastrar'}
+                        onPress={handleRegister}
+                    />
 
-            <Button
-                title="Cadastra-se com o Google"
-                onPress={() => { }}
-                icon={require('./../../styles/icons/google.png')}
-            />
+                    <Divider />
+
+                    <Button
+                        title="Cadastrar-se com o Google"
+                        onPress={() => { }}
+                        icon={require('./../../styles/icons/google.png')}
+                    />
+                </ScrollView>
+            </KeyboardAvoidingView>
         </View>
     );
 }
 
 const styles = StyleSheet.create({
-    container: {
+    safe: {
         flex: 1,
-        padding: 15,
-        justifyContent: 'center',
+        paddingTop: 20,
         backgroundColor: Theme.colors.background,
     },
+
+    container: {
+        padding: 20,
+        paddingTop: 40,
+    },
+
     header: {
         alignItems: 'center',
         marginBottom: 24,
-        justifyContent: 'center',
-        textAlign: 'center',
     },
+
+    logo: {
+        width: 100,
+        height: 100,
+        marginBottom: 16,
+    },
+
     title: {
         fontSize: Theme.fontSize.gxl,
-        fontWeight: 'bold' as const,
+        fontWeight: 'bold',
         marginBottom: 6,
         color: Theme.colors.primary,
-
     },
+
     subtitle: {
         fontSize: 16,
         marginBottom: 24,
         color: Theme.colors.text,
         textAlign: 'center',
-    },
-    link: {
-        textAlign: 'center',
-        marginTop: 16,
-        fontWeight: 'bold',
-        color: Theme.colors.primary,
     },
 });

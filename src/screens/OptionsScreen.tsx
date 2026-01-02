@@ -24,12 +24,7 @@ export default function OptionsScreen({ navigation }: any) {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.option}>
-                    <TouchableOpacity>
-                        <Text style={styles.optionText}>Ajuda</Text>
-                    </TouchableOpacity>
-                </View>
-                <View style={styles.option}>
-                    <TouchableOpacity>
+                    <TouchableOpacity onPress={() => navigation.navigate('sobrescreen')}>
                         <Text style={styles.optionText}>Sobre</Text>
                     </TouchableOpacity>
                 </View>
@@ -47,7 +42,7 @@ const styles = StyleSheet.create({
     },
     optionsContainer:{
         flex:1,
-        marginTop:80,
+        marginTop: -10,
         padding: 10,
         gap: 10,
     },
