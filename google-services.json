@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "309238954858",
+    "project_id": "estuda-ai-ec755",
+    "storage_bucket": "estuda-ai-ec755.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:309238954858:android:7f74f46bda1b363ed90313",
+        "android_client_info": {
+          "package_name": "com.company.estudaai"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "309238954858-pqb250mc8n5523esgbrlbt1i5pt8pumv.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBiIAcOosDn3SL9J2MAplP5vKB0ROdumkM"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "309238954858-pqb250mc8n5523esgbrlbt1i5pt8pumv.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
