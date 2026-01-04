@@ -29,7 +29,6 @@ export function ButtonCancel({
 
 const styles = StyleSheet.create({
   button: {
-    marginTop: 16,
     width: '100%',
     paddingVertical: 12,
     borderRadius: 8,

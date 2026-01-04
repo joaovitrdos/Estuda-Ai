@@ -5,6 +5,7 @@ import  ProfileScreen from "../../src/screens/ProfileScreen";
 import  AppTabs from "./AppTabs";
 import  OptionsScreen  from "../../src/screens/OptionsScreen";
 import  SobreScreen  from "../../src/screens/SobreScreen";
+import ConjuntoScreen from "../../src/screens/ConjuntoScreen";
 
 const Stack = createNativeStackNavigator();
 
@@ -22,6 +23,7 @@ export default function AuthStack() {
       <Stack.Screen name="sobrescreen" component={SobreScreen} />
       <Stack.Screen name="loginscreen" component={LoginScreen} />
       <Stack.Screen name="registerscreen" component={RegisterScreen} />
+      <Stack.Screen name="conjuntiscreen" component={ConjuntoScreen} />
     </Stack.Navigator>
   );
 }

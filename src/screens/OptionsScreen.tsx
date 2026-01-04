@@ -42,7 +42,7 @@ const styles = StyleSheet.create({
     },
     optionsContainer:{
         flex:1,
-        marginTop: -10,
+        marginTop: -20,
         padding: 10,
         gap: 10,
     },

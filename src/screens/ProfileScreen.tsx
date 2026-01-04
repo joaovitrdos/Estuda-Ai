@@ -6,6 +6,7 @@ import { AuthContext } from '../contexts/AuthContexts';
 import { Feather } from '@expo/vector-icons';
 import { ButtonCancel } from '../components/ButtonCancel';
 import { useAlert } from '../hooks/useAlertModal';
+import { Button } from '../components/Button';
 
 const avatars = [
   require('../styles/avatar/1.jpg'),
@@ -22,11 +23,11 @@ const avatars = [
   require('../styles/avatar/12.jpg'),
 ];
 
-export default function ProfileScreen() {
+export default function ProfileScreen({ navigation }: any) {
 
   const { showAlert } = useAlert();
-  const { user, avatarIndex, updateAvatar } = useContext(AuthContext);
-  
+  const { user, avatarIndex, updateAvatar, logout } = useContext(AuthContext);
+
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState(avatarIndex);
 
@@ -39,6 +40,17 @@ export default function ProfileScreen() {
 
     } catch {
       showAlert('Erro', 'Não foi possível atualizar o avatar.');
+    }
+  };
+
+  const handleLogout = async () => {
+    try {
+      await logout(); 
+
+      showAlert('Até logo', 'saindo com sucesso');
+       navigation.navigate('loginscreen')
+    } catch {
+      showAlert('Erro', 'Não foi possível sair da conta.');
     }
   };
 
@@ -85,11 +97,9 @@ export default function ProfileScreen() {
                 ))}
               </View>
 
-              <ButtonCancel
+              <Button
                 onPress={handleConfirm}
-                textColor={Theme.colors.text}
-                borderColor={Theme.colors.border}
-                label="Confirmar"
+                title="Confirmar"
               />
 
               <ButtonCancel
@@ -101,6 +111,13 @@ export default function ProfileScreen() {
             </View>
           </View>
         </Modal>
+
+        <ButtonCancel
+          onPress={handleLogout}
+          textColor={Theme.colors.red}
+          borderColor={Theme.colors.red}
+          label="Logout"
+        />
       </View>
     </View>
   );
@@ -124,8 +141,8 @@ const styles = StyleSheet.create({
     height: 140,
     borderRadius: 70,
     marginBottom: 16,
-    borderWidth: 2,
-    borderColor: Theme.colors.text,
+    borderWidth: 3,
+    borderColor: Theme.colors.blue,
   },
   name: {
     fontSize: Theme.fontSize.lg,

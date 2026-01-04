@@ -5,6 +5,7 @@ import { Input } from './input';
 import { ButtonCancel } from './ButtonCancel';
 import { AuthContext } from '../contexts/AuthContexts';
 import { useAlert } from '../hooks/useAlertModal';
+import { Button } from './Button';
 
 // lista de avatares
 const avatars = [
@@ -88,11 +89,9 @@ export default function Mensagem() {
               numberOfLines={3}
             />
 
-            <ButtonCancel
+            <Button
               onPress={handleGenerate}
-              textColor={Theme.colors.text}
-              borderColor={Theme.colors.border}
-              label="Adicionar aos Estudos"
+              title='Adicionar aos Estudos'
             />
 
             <ButtonCancel
@@ -128,12 +127,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   avatar: {
-    width: 40,
-    height: 40,
+    width: 45,
+    height: 45,
     borderRadius: 22.5,
     marginRight: 10,
-    borderWidth: 1,
-    borderColor: Theme.colors.primary,
+    borderWidth: 3,
+    borderColor: Theme.colors.blue,
   },
   welcome: {
     fontSize: Theme.fontSize.md,

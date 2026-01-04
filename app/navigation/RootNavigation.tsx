@@ -7,6 +7,8 @@ import Loading from '../../src/components/Loading';
 import LoginScreen from '../../src/screens/auth/LoginScreen';
 import ProfileScreen from '../../src/screens/ProfileScreen';
 import RegisterScreen from '../../src/screens/auth/RegisterScreen';
+import ConjuntoScreen from '../../src/screens/ConjuntoScreen';
+import HomeScreen from '../../src/screens/HomeScreen';
 
 export function RootNavigator() {
   const { user, loading } = useContext(AuthContext);

@@ -88,7 +88,7 @@ export default function LoginScreen({ navigation }: any) {
                     />
 
                     <TouchableOpacity
-                        onPress={() => navigation.navigate('RegisterScreen')}
+                        onPress={() => navigation.navigate('registerscreen')}
                     >
                         <Text style={styles.link}>Criar conta</Text>
                     </TouchableOpacity>
