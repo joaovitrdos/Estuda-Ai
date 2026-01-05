@@ -11,11 +11,10 @@ interface AuthContextData {
   user: User | null;
   token: string | null;
   loading: boolean;
-  avatarIndex: number;
+  avatarId: number;
   signIn(email: string, senha: string): Promise<void>;
   signUp(nome: string, email: string, senha: string): Promise<void>;
   signOut(): Promise<void>;
-  loadProfile(): Promise<void>;
   updateAvatar(index: number): Promise<void>;
 }
 
@@ -27,7 +26,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [token, setToken] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
-  const [avatarIndex, setAvatarIndex] = useState<number>(0);
+  const [avatarId, setAvatarId] = useState<number>(0);
 
   const avatars = [
     require('../styles/avatar/1.jpg'),
@@ -57,7 +56,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       }
 
       if (avatarStorage) {
-        setAvatarIndex(Number(avatarStorage));
+        setAvatarId(Number(avatarStorage));
       }
 
       setLoading(false);
@@ -81,12 +80,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(data.user);
     setToken(data.token);
 
-    const index = data.user.avatar_index ?? 0;
-    setAvatarIndex(index);
+    const index = data.user.avatar_id ?? 0;
+    setAvatarId(index);
 
     await AsyncStorage.setItem('@user', JSON.stringify(data.user));
     await AsyncStorage.setItem('@token', data.token);
-    await AsyncStorage.setItem('@avatarIndex', String(index));
+    await AsyncStorage.setItem('@avatarId', String(index));
   }
 
   // Registro
@@ -104,43 +103,38 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(data.user);
     setToken(data.token);
 
-    const index = data.user.avatar_index ?? 0;
-    setAvatarIndex(index);
+    const index = data.user.avatar_id ?? 0;
+    setAvatarId(index);
 
     await AsyncStorage.setItem('@user', JSON.stringify(data.user));
     await AsyncStorage.setItem('@token', data.token);
-    await AsyncStorage.setItem('@avatarIndex', String(index));
+    await AsyncStorage.setItem('@avatarId', String(index));
   }
 
   // Logout
   async function signOut() {
-    await AsyncStorage.clear();
+    if (!token) return;
+
+    const response = await fetch(`http://localhost:8000/api/logout`, {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error('Erro ao fazer logout');
+    }
+
+    await AsyncStorage.multiRemove([
+      '@user',
+      '@token',
+    ]);
+
     setUser(null);
     setToken(null);
-    setAvatarIndex(0);
-  }
 
-  // Carregar perfil do backend
-  async function loadProfile() {
-    if (!token) return;
-    try {
-      const response = await fetch('http://localhost:8000/api/user/profile', {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      });
-
-      const data = await response.json();
-      if (!response.ok) throw new Error('Erro ao carregar perfil');
-
-      setUser(data);
-      const index = data.avatar_index ?? 0;
-      setAvatarIndex(index);
-
-      await AsyncStorage.setItem('@user', JSON.stringify(data));
-      await AsyncStorage.setItem('@avatarIndex', String(index));
-    } catch (err) {
-      console.error('Erro ao carregar perfil:', err);
-    }
   }
 
   // Atualizar avatar
@@ -158,8 +152,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
       if (!data.success) throw new Error('Não foi possível atualizar o avatar');
 
-      setAvatarIndex(index);
-      await AsyncStorage.setItem('@avatarIndex', String(index));
+      setAvatarId(index);
+      await AsyncStorage.setItem('@avatarId', String(index));
     } catch (err) {
       console.error('Erro ao atualizar avatar:', err);
       throw err;
@@ -172,11 +166,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         user,
         token,
         loading,
-        avatarIndex,
+        avatarId,
         signIn,
         signUp,
         signOut,
-        loadProfile,
         updateAvatar,
       }}
     >

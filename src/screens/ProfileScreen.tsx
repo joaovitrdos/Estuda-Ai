@@ -26,10 +26,10 @@ const avatars = [
 export default function ProfileScreen({ navigation }: any) {
 
   const { showAlert } = useAlert();
-  const { user, avatarIndex, updateAvatar, logout } = useContext(AuthContext);
+  const { user, avatarId, updateAvatar, signOut } = useContext(AuthContext);
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState(avatarIndex);
+  const [selectedAvatar, setSelectedAvatar] = useState(avatarId);
 
   const handleConfirm = async () => {
     try {
@@ -45,10 +45,8 @@ export default function ProfileScreen({ navigation }: any) {
 
   const handleLogout = async () => {
     try {
-      await logout(); 
-
-      showAlert('Até logo', 'saindo com sucesso');
-       navigation.navigate('loginscreen')
+      await signOut();
+      showAlert('Até logo 👋', 'Você saiu da sua conta');
     } catch {
       showAlert('Erro', 'Não foi possível sair da conta.');
     }
@@ -60,7 +58,7 @@ export default function ProfileScreen({ navigation }: any) {
 
       <View style={styles.content}>
         <View style={styles.avatarContainer}>
-          <Image source={avatars[avatarIndex]} style={styles.avatar} />
+          <Image source={avatars[avatarId]} style={styles.avatar} />
 
           <TouchableOpacity
             style={styles.editButton}
