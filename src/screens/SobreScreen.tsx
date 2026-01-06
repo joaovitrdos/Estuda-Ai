@@ -21,11 +21,8 @@ export default function SobreScreen() {
                 titleText="Sobre"
                 showBackButton={true}
             />
-
             <ScrollView contentContainerStyle={styles.content}>
-                {/* Conteúdo da tela */}
             </ScrollView>
-
             <View style={styles.linksContainer}>
                 <TouchableOpacity onPress={() => openUrl('https://seusite.com/termos')}>
                     <Text style={styles.linkText}>Termos de Serviço</Text>
@@ -64,7 +61,7 @@ const styles = StyleSheet.create({
         position: 'absolute',
         bottom: 20,
         left: 0,
-        right: 0, 
+        right: 0,
         flexDirection: 'row',
         gap: 10,
         textAlign: 'center',

@@ -31,6 +31,10 @@
       "favicon": "./assets/favicon.png"
     },
 
-    "plugins": ["expo-router", "expo-web-browser"]
+    "plugins": [
+      "expo-router",
+      "expo-web-browser",
+      "expo-notifications"
+    ]
   }
 }

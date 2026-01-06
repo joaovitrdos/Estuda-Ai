@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, TouchableOpacity, Alert, Image } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity} from 'react-native';
 import { Theme } from '../styles/themes/themes';
 import { BackButton } from '../components/Backbutton';
 
@@ -6,10 +6,10 @@ export default function OptionsScreen({ navigation }: any) {
 
     return (
         <View style={styles.container}>
-            <BackButton 
-            showTitle={true}
-            titleText="Opções"
-            showBackButton={false}
+            <BackButton
+                showTitle={true}
+                titleText="Opções"
+                showBackButton={false}
             />
             <View style={styles.optionsContainer}>
                 <View style={styles.option}>
@@ -20,7 +20,7 @@ export default function OptionsScreen({ navigation }: any) {
                 <View style={styles.option}>
                     <TouchableOpacity>
                         <Text style={styles.optionText}>Configurações</Text>
-                        
+
                     </TouchableOpacity>
                 </View>
                 <View style={styles.option}>
@@ -40,8 +40,8 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         backgroundColor: Theme.colors.background,
     },
-    optionsContainer:{
-        flex:1,
+    optionsContainer: {
+        flex: 1,
         marginTop: -20,
         padding: 10,
         gap: 10,
@@ -51,7 +51,7 @@ const styles = StyleSheet.create({
         paddingHorizontal: 0,
         borderBottomWidth: 1,
         borderBottomColor: Theme.colors.border,
-    },  
+    },
     optionText: {
         fontSize: Theme.fontSize.md,
         color: Theme.colors.primary,

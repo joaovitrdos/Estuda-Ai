@@ -20,7 +20,7 @@ export default function RegisterScreen({ navigation }: any) {
 
     const { showAlert } = useAlert();
     const { signUp } = useContext(AuthContext);
-    
+
     const [nome, setNome] = useState('');
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
@@ -50,7 +50,6 @@ export default function RegisterScreen({ navigation }: any) {
     return (
         <View style={styles.safe}>
             <BackButton showTitle titleText="Cadastrar" showBackButton />
-
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
@@ -65,18 +64,16 @@ export default function RegisterScreen({ navigation }: any) {
                             source={require('../../../assets/favicon.png')}
                             style={styles.logo}
                         />
-
                         <Text style={styles.title}>Cadastrar</Text>
-
-                        <Text style={styles.subtitle}>
-                            Você terá respostas mais rápidas e precisas e muito inteligentes.
-                        </Text>
+                        <Text style={styles.subtitle}>Você terá respostas mais rápidas e precisas e muito inteligentes.</Text>
                     </View>
 
                     <Input
                         placeholder="Nome"
                         value={nome}
                         onChangeText={setNome}
+                        disabled={loading}
+                        showSoftInputOnFocus={!loading}
                     />
 
                     <Input
@@ -84,6 +81,8 @@ export default function RegisterScreen({ navigation }: any) {
                         keyboardType="email-address"
                         value={email}
                         onChangeText={setEmail}
+                        disabled={loading}
+                        showSoftInputOnFocus={!loading}
                     />
 
                     <Input
@@ -91,11 +90,14 @@ export default function RegisterScreen({ navigation }: any) {
                         secureTextEntry
                         value={senha}
                         onChangeText={setSenha}
+                        disabled={loading}
+                        showSoftInputOnFocus={!loading}
                     />
 
                     <Button
                         title={loading ? 'Carregando...' : 'Cadastrar'}
                         onPress={handleRegister}
+                        disabled={loading}
                     />
 
                     <Divider />

@@ -16,6 +16,7 @@ interface AuthContextData {
   signUp(nome: string, email: string, senha: string): Promise<void>;
   signOut(): Promise<void>;
   updateAvatar(index: number): Promise<void>;
+  createTema(tema: string): Promise<void>;
 }
 
 export const AuthContext = createContext<AuthContextData>(
@@ -43,12 +44,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     require('../styles/avatar/12.jpg'),
   ];
 
-  // Carregar sessão e avatar salvos
   useEffect(() => {
     async function loadStorage() {
       const userStorage = await AsyncStorage.getItem('@user');
       const tokenStorage = await AsyncStorage.getItem('@token');
-      const avatarStorage = await AsyncStorage.getItem('@avatarIndex');
+      const avatarStorage = await AsyncStorage.getItem('@avatarId');
 
       if (userStorage && tokenStorage) {
         setUser(JSON.parse(userStorage));
@@ -65,7 +65,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loadStorage();
   }, []);
 
-  // Login
   async function signIn(email: string, senha: string) {
     const response = await fetch('http://localhost:8000/api/login', {
       method: 'POST',
@@ -88,7 +87,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.setItem('@avatarId', String(index));
   }
 
-  // Registro
   async function signUp(nome: string, email: string, senha: string) {
     const response = await fetch('http://localhost:8000/api/registrar', {
       method: 'POST',
@@ -111,11 +109,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.setItem('@avatarId', String(index));
   }
 
-  // Logout
   async function signOut() {
     if (!token) return;
 
-    const response = await fetch(`http://localhost:8000/api/logout`, {
+    const response = await fetch('http://localhost:8000/api/logout', {
       method: 'POST',
       headers: {
         Accept: 'application/json',
@@ -136,8 +133,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setToken(null);
 
   }
-
-  // Atualizar avatar
   async function updateAvatar(index: number) {
     if (!token) return;
 
@@ -145,7 +140,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       const response = await fetch('http://localhost:8000/api/user/avatar', {
         method: 'POST',
         headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-        body: JSON.stringify({ avatar_index: index }),
+        body: JSON.stringify({ avatar_Id: index }),
       });
 
       const data = await response.json();
@@ -156,6 +151,34 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       await AsyncStorage.setItem('@avatarId', String(index));
     } catch (err) {
       console.error('Erro ao atualizar avatar:', err);
+      throw err;
+    }
+  }
+
+  async function createTema(tema: string) {
+    if (!token) return;
+
+    try {
+      const response = await fetch(
+        `http://localhost:8000/api/gerarOuBuscarTema?tema=${encodeURIComponent(tema)}`,
+        {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        }
+      );
+
+      const data = await response.json();
+
+      if (!data.success) {
+        throw new Error(data.message || 'Erro ao criar tema');
+      }
+
+      return data;
+    } catch (err) {
+      console.error('Erro ao criar tema:', err);
       throw err;
     }
   }
@@ -171,6 +194,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signUp,
         signOut,
         updateAvatar,
+        createTema,
       }}
     >
       {children}

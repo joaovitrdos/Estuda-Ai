@@ -1,9 +1,10 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Button } from 'react-native';
 import { useContext, useEffect, useState } from 'react';
 import { Theme } from '../styles/themes/themes';
 import Mensagem from '../components/Mensagem';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { AuthContext } from '../contexts/AuthContexts';
+import { requestNotificationPermission, sendLocalNotification } from '../service/notifications';
 
 interface ThemeItem {
   id: number;
@@ -13,21 +14,32 @@ interface ThemeItem {
 }
 
 export default function HomeScreen() {
-  const { listarTemas } = useContext(AuthContext);
+  // const { listarTemas } = useContext(AuthContext);
   const [themes, setThemes] = useState<ThemeItem[]>([]);
 
-  useEffect(() => {
-    async function carregarTemas() {
-      try {
-        const data = await listarTemas();
-        setThemes(data);
-      } catch (error) {
-        console.error('Erro ao listar temas:', error);
-      }
-    }
+  // useEffect(() => {
+  //   async function carregarTemas() {
+  //     try {
+  //       const data = await listarTemas();
+  //       setThemes(data);
+  //     } catch (error) {
+  //       console.error('Erro ao listar temas:', error);
+  //     }
+  //   }
 
-    carregarTemas();
+  //   carregarTemas();
+  // }, []);
+
+  useEffect(() => {
+    requestNotificationPermission();
   }, []);
+
+  async function handleNotify() {
+    await sendLocalNotification(
+      '🚀 Funcionou!',
+      'Notificação local no Expo + TypeScript'
+    );
+  }
 
   return (
     <View style={styles.container}>
@@ -69,6 +81,7 @@ export default function HomeScreen() {
           </TouchableOpacity>
         ))}
       </ScrollView>
+      <Button title="Disparar Notificação" onPress={handleNotify} />
     </View>
   );
 }

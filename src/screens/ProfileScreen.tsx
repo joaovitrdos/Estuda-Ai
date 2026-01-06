@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, Modal, Alert } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Modal} from 'react-native';
 import { Theme } from '../styles/themes/themes';
 import { BackButton } from '../components/Backbutton';
 import { useContext, useState } from 'react';
@@ -30,6 +30,7 @@ export default function ProfileScreen({ navigation }: any) {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [selectedAvatar, setSelectedAvatar] = useState(avatarId);
+  const [loading, setLoading] = useState(false);
 
   const handleConfirm = async () => {
     try {
@@ -98,6 +99,7 @@ export default function ProfileScreen({ navigation }: any) {
               <Button
                 onPress={handleConfirm}
                 title="Confirmar"
+                disabled={loading}
               />
 
               <ButtonCancel

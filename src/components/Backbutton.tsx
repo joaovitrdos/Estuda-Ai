@@ -18,8 +18,6 @@ export const BackButton: React.FC<BackButtonProps> = ({
 
   return (
     <View style={styles.container}>
-      
-      {/* Lado esquerdo (botão voltar) */}
       <View style={styles.side}>
         {showBackButton && (
           <TouchableOpacity
@@ -33,14 +31,10 @@ export const BackButton: React.FC<BackButtonProps> = ({
             />
           </TouchableOpacity>
         )}
-      </View>
-
-      {/* Centro (título) */}
+      </View>/
       <View style={styles.center}>
         {showTitle && <Text style={styles.title}>{titleText}</Text>}
       </View>
-
-      {/* Lado direito (placeholder para centralizar) */}
       <View style={styles.side} />
     </View>
   );
@@ -76,7 +70,7 @@ const styles = StyleSheet.create({
 
   center: {
     flex: 1,
-    justifyContent: 'center', // 🔥 garante centro vertical
+    justifyContent: 'center',
     alignItems: 'center',
   },
 

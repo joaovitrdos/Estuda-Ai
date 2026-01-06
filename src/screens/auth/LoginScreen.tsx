@@ -3,7 +3,6 @@ import {
     Text,
     StyleSheet,
     TouchableOpacity,
-    Alert,
     Image,
     ScrollView,
     KeyboardAvoidingView,
@@ -15,10 +14,12 @@ import { AuthContext } from '../../contexts/AuthContexts';
 import { Input } from '../../components/input';
 import { Button } from '../../components/Button';
 import { Divider } from '../../components/Divider';
+import { useAlert } from '../../hooks/useAlertModal';
 
 export default function LoginScreen({ navigation }: any) {
 
     const { signIn } = useContext(AuthContext);
+    const { showAlert } = useAlert();
 
     const [email, setEmail] = useState('');
     const [senha, setSenha] = useState('');
@@ -30,7 +31,7 @@ export default function LoginScreen({ navigation }: any) {
             await signIn(email, senha);
             navigation.navigate('homescreen');
         } catch (e: any) {
-            Alert.alert('Erro', e.message);
+            showAlert('Erro', e.message);
         } finally {
             setLoading(false);
         }
@@ -40,8 +41,7 @@ export default function LoginScreen({ navigation }: any) {
         <View style={{ flex: 1, backgroundColor: Theme.colors.background }}>
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
-                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-            >
+                behavior={Platform.OS === 'ios' ? 'padding' : 'height'}>
                 <ScrollView
                     contentContainerStyle={styles.container}
                     keyboardShouldPersistTaps="handled"
@@ -52,12 +52,8 @@ export default function LoginScreen({ navigation }: any) {
                             source={require('../../../assets/favicon.png')}
                             style={{ width: 100, height: 100, marginBottom: 16 }}
                         />
-
                         <Text style={styles.title}>Entrar ou Cadastrar</Text>
-
-                        <Text style={styles.subtitle}>
-                            Você terá respostas mais rápidas e precisas e muito inteligentes.
-                        </Text>
+                        <Text style={styles.subtitle}> Você terá respostas mais rápidas e precisas e muito inteligentes.</Text>
                     </View>
 
                     <Input
@@ -65,6 +61,8 @@ export default function LoginScreen({ navigation }: any) {
                         keyboardType="email-address"
                         value={email}
                         onChangeText={setEmail}
+                        disabled={loading}
+                        showSoftInputOnFocus={!loading}
                     />
 
                     <Input
@@ -72,11 +70,14 @@ export default function LoginScreen({ navigation }: any) {
                         secureTextEntry
                         value={senha}
                         onChangeText={setSenha}
+                        disabled={loading}
+                        showSoftInputOnFocus={!loading}
                     />
 
                     <Button
                         title={loading ? 'Carregando...' : 'Entrar'}
                         onPress={handleLogin}
+                        disabled={loading}
                     />
 
                     <Divider />

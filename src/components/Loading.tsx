@@ -14,7 +14,7 @@ export default function Loading() {
             })
         ).start();
     }, [rotation]);
-    
+
     const rotateInterpolate = rotation.interpolate({
         inputRange: [0, 1],
         outputRange: ['0deg', '360deg'],

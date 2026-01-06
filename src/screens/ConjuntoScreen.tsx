@@ -16,12 +16,9 @@ const levels = [
 const curveOffsets = [120, -350, 120, -350, 120, -350, 120];
 
 export default function ConjuntoScreen() {
-
-
   return (
     <View style={styles.container}>
       <BackButton showTitle titleText="Níveis" />
-
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
@@ -30,12 +27,11 @@ export default function ConjuntoScreen() {
           <View
             key={level.id}
             style={[
-              styles.levelWrapper,            
+              styles.levelWrapper,
               { marginLeft: curveOffsets[index] + 120 },
             ]}
           >
             <View style={styles.levelBase} />
-
             <TouchableOpacity
               activeOpacity={0.85}
               style={[
@@ -44,12 +40,11 @@ export default function ConjuntoScreen() {
               ]}
             >
               <Feather
-                name={level.active ? level.icon : 'lock'}  
+                name={level.active ? level.icon : 'lock'}
                 size={30}
                 color="#fff"
               />
             </TouchableOpacity>
-              
           </View>
         ))}
       </ScrollView>
@@ -72,7 +67,7 @@ const styles = StyleSheet.create({
   },
   levelBase: {
     position: 'absolute',
-    top: 0,  
+    top: 0,
     width: 78,
     height: 78,
     borderRadius: 45,

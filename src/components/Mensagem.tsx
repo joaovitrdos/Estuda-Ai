@@ -6,8 +6,8 @@ import { ButtonCancel } from './ButtonCancel';
 import { AuthContext } from '../contexts/AuthContexts';
 import { useAlert } from '../hooks/useAlertModal';
 import { Button } from './Button';
+import { notifyIfBackground } from '../service/notificationsBackground';
 
-// lista de avatares
 const avatars = [
   require('../styles/avatar/1.jpg'),
   require('../styles/avatar/2.jpg'),
@@ -24,35 +24,53 @@ const avatars = [
 ];
 
 export default function Mensagem() {
-
   const { showAlert } = useAlert();
-  const { user, avatarIndex } = useContext(AuthContext);
+  const { user, avatarId, createTema } = useContext(AuthContext);
 
   const [modalVisible, setModalVisible] = useState(false);
   const [tema, setTema] = useState('');
+  const [loading, setLoading] = useState(false);
 
-  const handleGenerate = () => {
+  const handleGenerate = async () => {
     if (!tema.trim()) {
       showAlert('Atenção', 'Informe um tema válido');
       return;
     }
+    try {
+      setLoading(true);
 
-    console.log('Tema adicionado:', tema);
+      const response = await createTema(tema) as unknown as { success: boolean; message?: string };
 
-    showAlert('Sucesso', 'Tema adicionado com sucesso');
+      if (!response?.success) {
+        throw new Error(response?.message || 'Erro ao gerar tema');
+      }
+      await notifyIfBackground(
+      '🎉 Tema gerado!',
+      'Suas questões já estão prontas.'
+    );
+      showAlert(
+        'Sucesso',
+        'Tema gerado com sucesso! Estamos preparando as questões...'
+      );
 
-    setTema('');
-    setModalVisible(false);
+      setTema('');
+      setModalVisible(false);
+
+    } catch (err: any) {
+      showAlert(
+        'Erro',
+        err.message || 'Não foi possível gerar o tema'
+      );
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <View style={styles.container}>
       <View style={styles.row}>
         <View style={styles.userInfo}>
-          <Image
-            source={avatars[avatarIndex]}
-            style={styles.avatar}
-          />
+          <Image source={avatars[avatarId]} style={styles.avatar} />
           <View style={styles.userDetails}>
             <Text style={styles.welcome}>Bem-vindo,</Text>
             <Text style={styles.userName}>{user?.name || 'Usuário'}</Text>
@@ -87,11 +105,14 @@ export default function Mensagem() {
               onChangeText={setTema}
               multiline
               numberOfLines={3}
+              disabled={loading}
+              showSoftInputOnFocus={!loading}
             />
 
             <Button
               onPress={handleGenerate}
-              title='Adicionar aos Estudos'
+              title={loading ? 'Adicionando...' : 'Adicionar aos Estudos'}
+              disabled={loading}
             />
 
             <ButtonCancel

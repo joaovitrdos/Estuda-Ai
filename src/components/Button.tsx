@@ -7,17 +7,33 @@ type ButtonProps = {
   onPress: () => void;
   icon?: any;
   style?: any;
+  disabled?: boolean;
 };
 
-export function Button({ title, onPress, icon, style }: ButtonProps) {
-
+export function Button({
+  title,
+  onPress,
+  icon,
+  style,
+  disabled = false,
+}: ButtonProps) {
   return (
     <TouchableOpacity
-      style={styles.button}
+      style={[
+        styles.button,
+        disabled && styles.disabled,
+        style,
+      ]}
       onPress={onPress}
+      disabled={disabled}
+      activeOpacity={0.7}
     >
       {icon && <Image source={icon} style={styles.icon} />}
-      <Text style={styles.text}>
+
+      <Text style={[
+        styles.text,
+        disabled && styles.text,
+      ]}>
         {title}
       </Text>
     </TouchableOpacity>
@@ -41,6 +57,9 @@ const styles = StyleSheet.create({
   icon: {
     width: 20,
     height: 20,
-    marginRight: 8, 
+    marginRight: 8,
+  },
+  disabled: {
+    opacity: 0.6,
   },
 });

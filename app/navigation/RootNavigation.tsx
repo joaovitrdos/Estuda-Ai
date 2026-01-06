@@ -5,11 +5,11 @@ import AuthStack from './AuthStack';
 import AppTabs from './AppTabs';
 import Loading from '../../src/components/Loading';
 import ProfileScreen from '../../src/screens/ProfileScreen';
+import HomeScreen from '../../src/screens/HomeScreen';
 
 export function RootNavigator() {
   const { token, user, loading } = useContext(AuthContext);
 
-  // 🔥 Garante carregar o perfil quando existe token
   useEffect(() => {
     if (token && !user) {
     }
@@ -22,7 +22,7 @@ export function RootNavigator() {
   return (
     <NavigationContainer>
       {/* {token && user ? <AppTabs /> : <AuthStack />} */}
-      <ProfileScreen />
+      <HomeScreen />
     </NavigationContainer>
   );
 }
