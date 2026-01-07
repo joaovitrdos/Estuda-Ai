@@ -300,23 +300,27 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   modalTitle: {
-    fontSize: Theme.fontSize.md,
+    fontSize: Theme.fontSize.lg,
     marginBottom: 20,
     fontWeight: '700',
     color: Theme.colors.primary,
   },
   modalSubtitle: {
+    fontSize: Theme.fontSize.md,
     color: Theme.colors.primary,
+    marginBottom: 20,
+    fontWeight: '500',
   },
   modalCorrectWrongTitle:{
-    fontSize: Theme.fontSize.md,
+    fontSize: Theme.fontSize.lg,
     marginBottom: 20,
+    fontWeight: '500',
     color: Theme.colors.primary,
   },
   correctText: {
-    color: Theme.colors.green
+    color: Theme.colors.primary
   },
   wrongText: {
-    color: Theme.colors.red
+    color: Theme.colors.primary
   },
 });
