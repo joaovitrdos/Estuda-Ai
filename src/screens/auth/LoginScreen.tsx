@@ -110,8 +110,6 @@ const styles = StyleSheet.create({
         alignItems: 'center',
         marginBottom: 24,
     },
-
-
     title: {
         fontSize: Theme.fontSize.gxl,
         fontWeight: 'bold' as const,

@@ -6,6 +6,7 @@ import AppTabs from './AppTabs';
 import Loading from '../../src/components/Loading';
 import ProfileScreen from '../../src/screens/ProfileScreen';
 import HomeScreen from '../../src/screens/HomeScreen';
+import { QuestionsScreen } from '../../src/screens/QuestionsScreen';
 
 export function RootNavigator() {
   const { token, user, loading } = useContext(AuthContext);
@@ -22,7 +23,7 @@ export function RootNavigator() {
   return (
     <NavigationContainer>
       {/* {token && user ? <AppTabs /> : <AuthStack />} */}
-      <HomeScreen />
+      <QuestionsScreen />
     </NavigationContainer>
   );
 }

@@ -9,6 +9,7 @@ export const Theme = {
     gray: '#808080',
     blue: '#5c728fff',
     red: '#ff5b5bff',
+    green: '#4caf50ff',
   },
 
   // Fonts

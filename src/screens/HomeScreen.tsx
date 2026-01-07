@@ -4,7 +4,6 @@ import { Theme } from '../styles/themes/themes';
 import Mensagem from '../components/Mensagem';
 import { Feather, FontAwesome5 } from '@expo/vector-icons';
 import { AuthContext } from '../contexts/AuthContexts';
-import { requestNotificationPermission, sendLocalNotification } from '../service/notifications';
 
 interface ThemeItem {
   id: number;
@@ -29,17 +28,6 @@ export default function HomeScreen() {
 
   //   carregarTemas();
   // }, []);
-
-  useEffect(() => {
-    requestNotificationPermission();
-  }, []);
-
-  async function handleNotify() {
-    await sendLocalNotification(
-      '🚀 Funcionou!',
-      'Notificação local no Expo + TypeScript'
-    );
-  }
 
   return (
     <View style={styles.container}>
@@ -81,7 +69,6 @@ export default function HomeScreen() {
           </TouchableOpacity>
         ))}
       </ScrollView>
-      <Button title="Disparar Notificação" onPress={handleNotify} />
     </View>
   );
 }
