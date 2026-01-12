@@ -32,39 +32,41 @@ export default function Mensagem() {
   const [loading, setLoading] = useState(false);
 
   const handleGenerate = async () => {
-    if (!tema.trim()) {
-      showAlert('Atenção', 'Informe um tema válido');
-      return;
-    }
-    try {
-      setLoading(true);
+  if (!tema.trim()) {
+    showAlert('Atenção', 'Informe um tema válido');
+    return;
+  }
 
-      const response = await createTema(tema) as unknown as { success: boolean; message?: string };
+  try {
+    setLoading(true);
 
-      if (!response?.success) {
-        throw new Error(response?.message || 'Erro ao gerar tema');
-      }
-      await notifyIfBackground(
+    const temaCriado = await createTema(tema);
+
+    await notifyIfBackground(
       '🎉 Tema gerado!',
       'Suas questões já estão prontas.'
     );
-      showAlert(
-        'Sucesso',
-        'Tema gerado com sucesso! Estamos preparando as questões...'
-      );
 
-      setTema('');
-      setModalVisible(false);
+    showAlert(
+      'Sucesso',
+      'Tema gerado com sucesso! Estamos preparando as questões...'
+    );
 
-    } catch (err: any) {
-      showAlert(
-        'Erro',
-        err.message || 'Não foi possível gerar o tema'
-      );
-    } finally {
-      setLoading(false);
-    }
-  };
+    setTema('');
+    setModalVisible(false);
+
+    // 🔑 aqui você já tem o ID
+    console.log('Tema ID:', temaCriado.id);
+
+  } catch (err: any) {
+    showAlert(
+      'Erro',
+      err.message || 'Não foi possível gerar o tema'
+    );
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <View style={styles.container}>

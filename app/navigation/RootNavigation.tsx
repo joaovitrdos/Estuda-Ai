@@ -1,29 +1,20 @@
-import { NavigationContainer } from '@react-navigation/native';
-import { useContext, useEffect } from 'react';
-import { AuthContext } from '../../src/contexts/AuthContexts';
-import AuthStack from './AuthStack';
-import AppTabs from './AppTabs';
-import Loading from '../../src/components/Loading';
-import ProfileScreen from '../../src/screens/ProfileScreen';
-import HomeScreen from '../../src/screens/HomeScreen';
-import { QuestionsScreen } from '../../src/screens/QuestionsScreen';
+import { NavigationContainer } from '@react-navigation/native'
+import { useContext } from 'react'
+import { AuthContext } from '../../src/contexts/AuthContexts'
+import StackRoutes from './stack.routes'
+import StackAuthRoutes from './stack.auth.routes'
+import Loading from '../../src/components/Loading'
 
 export function RootNavigator() {
-  const { token, user, loading } = useContext(AuthContext);
-
-  useEffect(() => {
-    if (token && !user) {
-    }
-  }, [token]);
+  const { token, user, loading } = useContext(AuthContext)
 
   if (loading || (token && !user)) {
-    return <Loading />;
+    return <Loading />
   }
 
   return (
     <NavigationContainer>
-      {/* {token && user ? <AppTabs /> : <AuthStack />} */}
-      <QuestionsScreen />
+      {token && user ? <StackAuthRoutes /> : <StackRoutes />}
     </NavigationContainer>
-  );
+  )
 }

@@ -1,33 +1,39 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Button } from 'react-native';
-import { useContext, useEffect, useState } from 'react';
-import { Theme } from '../styles/themes/themes';
-import Mensagem from '../components/Mensagem';
-import { Feather, FontAwesome5 } from '@expo/vector-icons';
-import { AuthContext } from '../contexts/AuthContexts';
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
+import { useContext, useEffect, useState } from 'react'
+import { Theme } from '../styles/themes/themes'
+import Mensagem from '../components/Mensagem'
+import { Feather, MaterialIcons } from '@expo/vector-icons'
+import { AuthContext } from '../contexts/AuthContexts'
+import { useNavigation } from '@react-navigation/native'
 
-interface ThemeItem {
-  id: number;
-  title: string;
-  color: string;
-  status: 'pendente' | 'concluido';
+interface Tema {
+  temaId: number
+  tema: string
+  conclusao: boolean
 }
 
 export default function HomeScreen() {
-  // const { listarTemas } = useContext(AuthContext);
-  const [themes, setThemes] = useState<ThemeItem[]>([]);
+  const { listarTemas, setTemaAtual } = useContext(AuthContext)
+  const [themes, setThemes] = useState<Tema[]>([])
+  const navigation = useNavigation<any>()
 
-  // useEffect(() => {
-  //   async function carregarTemas() {
-  //     try {
-  //       const data = await listarTemas();
-  //       setThemes(data);
-  //     } catch (error) {
-  //       console.error('Erro ao listar temas:', error);
-  //     }
-  //   }
+  useEffect(() => {
+    async function carregarTemas() {
+      try {
+        const data = await listarTemas()
+        setThemes(data)
+      } catch (error) {
+        console.error('Erro ao listar temas:', error)
+      }
+    }
 
-  //   carregarTemas();
-  // }, []);
+    carregarTemas()
+  }, [])
+
+  async function handleTemaPress(id: number) {
+    await setTemaAtual(id)
+    navigation.getParent()?.navigate('Conjunto', { temaId: id })
+  }
 
   return (
     <View style={styles.container}>
@@ -44,34 +50,30 @@ export default function HomeScreen() {
       >
         {themes.map(theme => (
           <TouchableOpacity
-            key={theme.id}
+            key={theme.temaId}
             activeOpacity={0.8}
-            style={[styles.card, { backgroundColor: theme.color }]}
+            style={styles.card}
+            onPress={() => handleTemaPress(theme.temaId)}
           >
             <View style={styles.iconContainer}>
               <Feather name="book-open" size={26} color="#fff" />
             </View>
 
             <View style={styles.textContainer}>
-              <Text style={styles.cardTitle}>{theme.title}</Text>
+              <Text style={styles.cardTitle}>{theme.tema}</Text>
               <Text style={styles.cardSubtitle}>
-                {theme.status === 'concluido'
-                  ? 'Tema concluído'
-                  : 'Tema pendente'}
+                {theme.conclusao ? 'Tema concluído' : 'Tema pendente'}
               </Text>
             </View>
 
-            {theme.status === 'concluido' ? (
-              <FontAwesome5 name="check-circle" size={22} color="#A8E6A3" />
-            ) : (
-              <FontAwesome5 name="clock" size={22} color="#FFE082" />
-            )}
+            <MaterialIcons name="arrow-forward-ios" size={18} color="#fff" />
           </TouchableOpacity>
         ))}
       </ScrollView>
     </View>
-  );
+  )
 }
+
 
 const styles = StyleSheet.create({
   container: {
@@ -123,4 +125,4 @@ const styles = StyleSheet.create({
     color: '#f2f2f2',
     marginTop: 2,
   },
-});
+})

@@ -1,104 +1,142 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Image } from 'react-native';
-import { Feather } from '@expo/vector-icons';
-import { Theme } from '../styles/themes/themes';
-import { BackButton } from '../components/Backbutton';
+import React, { useContext, useEffect, useState } from 'react'
+import {
+  View,
+  Text,
+  StyleSheet,
+  TouchableOpacity,
+  ScrollView,
+  ActivityIndicator,
+} from 'react-native'
+import { Feather } from '@expo/vector-icons'
+import { Theme } from '../styles/themes/themes'
+import { BackButton } from '../components/Backbutton'
+import { AuthContext } from '../contexts/AuthContexts'
 
-const levels = [
-  { id: 1, title: 'Conjunto 1', icon: 'star', active: true },
-  { id: 2, title: 'Conjunto 2', icon: 'book', active: true },
-  { id: 3, title: 'Conjunto 3', icon: 'zap', active: true },
-  { id: 4, title: 'Conjunto 4', icon: 'award', active: false },
-  { id: 5, title: 'Conjunto 5', icon: 'target', active: false },
-  { id: 6, title: 'Conjunto 6', icon: 'flag', active: false },
-  { id: 7, title: 'Conjunto 7', icon: 'lock', active: false },
-];
-
-const curveOffsets = [120, -350, 120, -350, 120, -350, 120];
+interface Conjunto {
+  id: number
+}
 
 export default function ConjuntoScreen() {
+  const { listaConjuntos, temaId } = useContext(AuthContext)
+
+  const [conjuntos, setConjuntos] = useState<Conjunto[]>([])
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    console.log('🧠 [ConjuntoScreen] temaId recebido:', temaId)
+
+    if (!temaId) {
+      console.log('❌ temaId não definido, abortando fetch')
+      return
+    }
+
+    async function carregarConjuntos() {
+      try {
+        setLoading(true)
+
+        console.log('🚀 Buscando conjuntos para temaId:', temaId)
+        const data = await listaConjuntos(temaId)
+
+        console.log('✅ Conjuntos carregados:', data)
+        setConjuntos(data)
+      } catch (error) {
+        console.error('🔥 Erro ao buscar conjuntos:', error)
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    carregarConjuntos()
+  }, [temaId])
+
   return (
     <View style={styles.container}>
-      <BackButton showTitle titleText="Níveis" />
-      <ScrollView
-        showsVerticalScrollIndicator={false}
-        contentContainerStyle={styles.scrollContent}
-      >
-        {levels.map((level, index) => (
-          <View
-            key={level.id}
-            style={[
-              styles.levelWrapper,
-              { marginLeft: curveOffsets[index] + 120 },
-            ]}
+      <BackButton showTitle titleText="Conjuntos" />
+
+      {loading && (
+        <ActivityIndicator
+          size="large"
+          color={Theme.colors.primary}
+          style={{ marginTop: 30 }}
+        />
+      )}
+
+      {!loading && conjuntos.length === 0 && (
+        <Text style={styles.infoText}>
+          Nenhum conjunto encontrado
+        </Text>
+      )}
+
+      <ScrollView showsVerticalScrollIndicator={false}>
+        {conjuntos.map((conjunto, index) => (
+          <TouchableOpacity
+            key={conjunto.id}
+            style={styles.card}
+            activeOpacity={0.85}
+            onPress={() => {
+              console.log('➡️ Conjunto selecionado:', conjunto.id)
+              // navigation.navigate('Questions', { conjuntoId: conjunto.id })
+            }}
           >
-            <View style={styles.levelBase} />
-            <TouchableOpacity
-              activeOpacity={0.85}
-              style={[
-                styles.level,
-                !level.active && styles.locked,
-              ]}
-            >
-              <Feather
-                name={level.active ? level.icon : 'lock'}
-                size={30}
-                color="#fff"
-              />
-            </TouchableOpacity>
-          </View>
+            <View style={styles.icon}>
+              <Feather name="layers" size={22} color="#fff" />
+            </View>
+
+            <View style={{ flex: 1 }}>
+              <Text style={styles.cardTitle}>
+                Conjunto {index + 1}
+              </Text>
+              <Text style={styles.cardSubtitle}>
+                ID: {conjunto.id}
+              </Text>
+            </View>
+
+            <Feather name="chevron-right" size={22} color="#fff" />
+          </TouchableOpacity>
         ))}
       </ScrollView>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingTop: 12,
     backgroundColor: Theme.colors.background,
+    padding: 15,
   },
-  scrollContent: {
-    paddingVertical: 0,
+  infoText: {
+    textAlign: 'center',
+    marginTop: 30,
+    color: Theme.colors.text,
+    fontSize: 16,
   },
-  levelWrapper: {
+  card: {
+    flexDirection: 'row',
     alignItems: 'center',
-    marginVertical: 20,
-  },
-  levelBase: {
-    position: 'absolute',
-    top: 0,
-    width: 78,
-    height: 78,
-    borderRadius: 45,
-    backgroundColor: Theme.colors.border,
-    zIndex: -1,
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 4 },
-  },
-  level: {
-    width: 70,
-    height: 70,
-    borderRadius: 41,
     backgroundColor: Theme.colors.blue,
+    padding: 18,
+    borderRadius: 18,
+    marginBottom: 14,
+    elevation: 4,
+  },
+  icon: {
+    width: 46,
+    height: 46,
+    borderRadius: 23,
+    backgroundColor: 'rgba(255,255,255,0.25)',
     justifyContent: 'center',
     alignItems: 'center',
-    elevation: 8,
-    shadowColor: '#000',
-    shadowOpacity: 0.25,
-    shadowRadius: 6,
-    shadowOffset: { width: 0, height: 4 },
+    marginRight: 14,
   },
-  locked: {
-    backgroundColor: '#BDBDBD',
-  },
-  levelText: {
-    marginTop: 10,
-    fontSize: 14,
-    fontWeight: '600',
+  cardTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
     color: '#fff',
   },
-});
+  cardSubtitle: {
+    fontSize: 14,
+    color: '#f1f1f1',
+    marginTop: 2,
+  },
+})

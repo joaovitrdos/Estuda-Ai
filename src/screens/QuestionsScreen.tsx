@@ -1,8 +1,9 @@
-import { View, Text, StyleSheet, TouchableOpacity, Modal } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity, Modal, Image } from 'react-native';
 import { useState } from 'react';
 import { Theme } from '../styles/themes/themes';
 import { BackButton } from '../components/Backbutton';
 import { Button } from '../components/Button';
+import { Video } from 'expo-av';
 
 type Question = {
   question: string;
@@ -21,34 +22,34 @@ const questions: Question[] = [
     ],
     correctIndex: 1,
   },
-  {
-    question: 'Qual linguagem o React Native usa?',
-    options: ['Java', 'Kotlin', 'JavaScript', 'Swift'],
-    correctIndex: 2,
-  },
-  {
-    question: 'Quem mantém o React Native?',
-    options: ['Google', 'Apple', 'Microsoft', 'Meta'],
-    correctIndex: 3,
-  },
-  {
-    question: 'Qual componente cria uma área clicável?',
-    options: [
-      'Button',
-      'TouchableOpacity',
-      'Pressable',
-      'Todas as alternativas',
-    ],
-    correctIndex: 3,
-  },
-  {
-    question: 'Qual hook é usado para estados?',
-    options: ['useEffect', 'useContext', 'useState', 'useMemo'],
-    correctIndex: 2,
-  },
+  // {
+  //   question: 'Qual linguagem o React Native usa?',
+  //   options: ['Java', 'Kotlin', 'JavaScript', 'Swift'],
+  //   correctIndex: 2,
+  // },
+  // {
+  //   question: 'Quem mantém o React Native?',
+  //   options: ['Google', 'Apple', 'Microsoft', 'Meta'],
+  //   correctIndex: 3,
+  // },
+  // {
+  //   question: 'Qual componente cria uma área clicável?',
+  //   options: [
+  //     'Button',
+  //     'TouchableOpacity',
+  //     'Pressable',
+  //     'Todas as alternativas',
+  //   ],
+  //   correctIndex: 3,
+  // },
+  // {
+  //   question: 'Qual hook é usado para estados?',
+  //   options: ['useEffect', 'useContext', 'useState', 'useMemo'],
+  //   correctIndex: 2,
+  // },
 ];
 
-export function QuestionsScreen() {
+export default function QuestionsScreen({ navigation }: { navigation: any }) {
   const [mode, setMode] = useState<'normal' | 'retry'>('normal');
   const [normalIndex, setNormalIndex] = useState(0);
   const [retryQueue, setRetryQueue] = useState<Question[]>([]);
@@ -59,6 +60,7 @@ export function QuestionsScreen() {
   const [showModal, setShowModal] = useState(false);
   const [showRetryIntro, setShowRetryIntro] = useState(false);
   const [correctCount, setCorrectCount] = useState(0);
+  const [showFinalModal, setShowFinalModal] = useState(false);
 
   const currentQuestion =
     mode === 'normal'
@@ -96,18 +98,29 @@ export function QuestionsScreen() {
         setShowRetryIntro(true);
         return;
       }
-    }
 
+      setShowFinalModal(true);
+      return;
+    }
+    y
     if (mode === 'retry') {
       if (isCorrect) {
         const updated = [...retryQueue];
         updated.splice(retryIndex, 1);
         setRetryQueue(updated);
-        setRetryIndex(0);
+
+        if (updated.length === 0) {
+          setShowFinalModal(true);
+          return;
+        }
+
+        setRetryIndex(prev => (prev >= updated.length ? 0 : prev));
       } else {
         setRetryIndex(prev =>
           prev < retryQueue.length - 1 ? prev + 1 : 0
         );
+        setShowFinalModal(true);
+        return;
       }
     }
   }
@@ -190,7 +203,7 @@ export function QuestionsScreen() {
         </View>
       </Modal>
 
-      <Modal transparent animationType="fade" visible={showRetryIntro}>
+      <Modal transparent animationType="slide" visible={showRetryIntro}>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>
@@ -206,6 +219,49 @@ export function QuestionsScreen() {
               title="Continuar"
               style={{ width: '100%' }}
             />
+          </View>
+        </View>
+      </Modal>
+
+      <Modal transparent animationType="slide" visible={showFinalModal}>
+        <View style={styles.modalOverlayFinal}>
+          <View style={styles.modalContentFinal}>
+            <View style={styles.videoPlaceholder}>
+              <Video
+                source={require('../styles/video/done.mp4')}
+                rate={1.0}
+                volume={0}
+                isMuted={true}
+                resizeMode="stretch"
+                shouldPlay
+                isLooping
+                style={styles.video}
+              />
+            </View>
+            <Text style={styles.finalTitle}>Prática Concluída!</Text>
+            <View style={styles.finalMessageContainer}>
+              <Text style={styles.finalMessage}>
+                {Math.round((correctCount / questions.length) * 100) <= 60
+                  ? 'MELHORAR'
+                  : Math.round((correctCount / questions.length) * 100) <= 80
+                    ? 'MUITO BOM'
+                    : 'INCREÍVEL'}
+              </Text>
+              <View style={styles.finalPercentageContainer}>
+                <Image source={require('../styles/icons/porce.png')} style={{ width: 22, height: 22 }} />
+                <Text style={
+                  styles.finalPercentage}>
+                  {Math.round((correctCount / questions.length) * 100)}%
+                </Text>
+              </View>
+            </View>
+            <View style={styles.finalButtonContainer}>
+              <Button
+                onPress={() => navigation.navigate('conjuntoscreen')}
+                title="Continuar"
+                style={{ width: '100%' }}
+              />
+            </View>
           </View>
         </View>
       </Modal>
@@ -291,36 +347,107 @@ const styles = StyleSheet.create({
   modalOverlay: {
     flex: 1,
     justifyContent: 'flex-end',
+    textAlign: 'center',
   },
   modalContent: {
     backgroundColor: Theme.colors.card,
-    padding: 24,
-    borderTopLeftRadius: 24,
-    borderTopRightRadius: 24,
+    padding: 15,
+    textAlign: 'center',
+  },
+  modalOverlayFinal: {
+    flex: 1,
+    backgroundColor: Theme.colors.background,
+    justifyContent: 'center',
     alignItems: 'center',
   },
+  modalContentFinal: {
+    width: '100%',
+    height: '100%',
+    backgroundColor: Theme.colors.background,
+    borderRadius: 24,
+    alignItems: 'center',
+    padding: 15,
+    position: 'relative',
+  },
+  videoPlaceholder: {
+    width: '100%',
+    height: 450,
+    borderWidth: 2,
+    borderColor: Theme.colors.border,
+    borderRadius: 15,
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  video: {
+    width: '100%',
+    height: '100%',
+    borderRadius: 15,
+  },
+  finalTitle: {
+    fontSize: 28,
+    fontWeight: '700',
+    color: Theme.colors.dourado,
+    textAlign: 'center',
+    marginBottom: 20,
+  },
+  finalPercentage: {
+    fontSize: Theme.fontSize.xl,
+    fontWeight: '600',
+    color: Theme.colors.green,
+  },
+  finalPercentageContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    gap: 10,
+    padding: 15,
+    backgroundColor: Theme.colors.background,
+    borderRadius: 15,
+  },
+  finalButtonContainer: {
+    position: 'absolute',
+    bottom: 20,
+    width: '100%',
+    padding: 15,
+  },
+  finalMessage: {
+    fontSize: Theme.fontSize.md,
+    fontWeight: '600',
+    textAlign: 'center',
+    color: Theme.colors.background,
+    backgroundColor: Theme.colors.green,
+    borderTopStartRadius: 15,
+    borderTopEndRadius: 15,
+    padding: 2,
+  },
+  finalMessageContainer: {
+    borderWidth: 3,
+    borderColor: Theme.colors.green,
+    borderRadius: 15,
+    width: 150,
+    height: 95,
+    backgroundColor: Theme.colors.green,
+  },
   modalTitle: {
-    fontSize: Theme.fontSize.lg,
+    fontSize: Theme.fontSize.md,
     marginBottom: 20,
     fontWeight: '700',
+    textAlign: 'center',
     color: Theme.colors.primary,
   },
   modalSubtitle: {
-    fontSize: Theme.fontSize.md,
     color: Theme.colors.primary,
-    marginBottom: 20,
-    fontWeight: '500',
   },
-  modalCorrectWrongTitle:{
-    fontSize: Theme.fontSize.lg,
-    marginBottom: 20,
-    fontWeight: '500',
+  modalCorrectWrongTitle: {
+    fontSize: Theme.fontSize.md,
     color: Theme.colors.primary,
   },
   correctText: {
-    color: Theme.colors.primary
+    color: Theme.colors.green
   },
   wrongText: {
-    color: Theme.colors.primary
+    color: Theme.colors.red
   },
 });

@@ -37,7 +37,7 @@ export default function RegisterScreen({ navigation }: any) {
 
             await signUp(nome, email, senha);
 
-            showAlert('Sucesso', 'Conta criada com sucesso 🎉');
+            showAlert('Sucesso', 'Conta criada com sucesso');
             navigation.navigate('loginscreen');
 
         } catch (e: any) {
@@ -49,7 +49,7 @@ export default function RegisterScreen({ navigation }: any) {
 
     return (
         <View style={styles.safe}>
-            <BackButton showTitle titleText="Cadastrar" showBackButton />
+            <BackButton showTitle={false} showBackButton />
             <KeyboardAvoidingView
                 style={{ flex: 1 }}
                 behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
