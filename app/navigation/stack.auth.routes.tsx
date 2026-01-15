@@ -6,6 +6,7 @@ import ConjuntoScreen from "../../src/screens/ConjuntoScreen";
 import TabRoutes from './tab.routes';
 import LoginScreen from "../../src/screens/auth/LoginScreen";
 import RegisterScreen from "../../src/screens/auth/RegisterScreen";
+import QuestionsScreen from '../../src/screens/QuestionsScreen';
 
 const Stack = createStackNavigator();
 
@@ -20,6 +21,7 @@ export default function StackAuthRoutes() {
       <Stack.Screen name="tabroutes" component={TabRoutes} />
       <Stack.Screen name="profile" component={ProfileScreen} />
       <Stack.Screen name="Conjunto" component={ConjuntoScreen} />
+      <Stack.Screen name="Questions" component={QuestionsScreen} />
       <Stack.Screen name="options" component={OptionsScreen} />
       <Stack.Screen name="sobre" component={SobreScreen} />
       <Stack.Screen name="loginscreen" component={LoginScreen} />

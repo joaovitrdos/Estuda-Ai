@@ -31,7 +31,6 @@ export default function HomeScreen() {
   }, [])
 
   async function handleTemaPress(id: number) {
-    await setTemaAtual(id)
     navigation.getParent()?.navigate('Conjunto', { temaId: id })
   }
 

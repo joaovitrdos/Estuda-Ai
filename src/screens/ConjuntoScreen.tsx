@@ -11,36 +11,35 @@ import { Feather } from '@expo/vector-icons'
 import { Theme } from '../styles/themes/themes'
 import { BackButton } from '../components/Backbutton'
 import { AuthContext } from '../contexts/AuthContexts'
+import { useRoute, useNavigation } from '@react-navigation/native'
 
 interface Conjunto {
   id: number
+  questoes: any[]
 }
 
 export default function ConjuntoScreen() {
-  const { listaConjuntos, temaId } = useContext(AuthContext)
+  const route = useRoute<any>()
+  const navigation = useNavigation<any>()
+  const temaId = route.params?.temaId
 
+  const { listaConjuntos, setTemaAtual } = useContext(AuthContext)
   const [conjuntos, setConjuntos] = useState<Conjunto[]>([])
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(true)
 
   useEffect(() => {
-    console.log('🧠 [ConjuntoScreen] temaId recebido:', temaId)
-
     if (!temaId) {
-      console.log('❌ temaId não definido, abortando fetch')
+      setLoading(false)
       return
     }
+    setTemaAtual(temaId)
 
     async function carregarConjuntos() {
       try {
-        setLoading(true)
-
         console.log('🚀 Buscando conjuntos para temaId:', temaId)
         const data = await listaConjuntos(temaId)
-
-        console.log('✅ Conjuntos carregados:', data)
         setConjuntos(data)
       } catch (error) {
-        console.error('🔥 Erro ao buscar conjuntos:', error)
       } finally {
         setLoading(false)
       }
@@ -74,8 +73,10 @@ export default function ConjuntoScreen() {
             style={styles.card}
             activeOpacity={0.85}
             onPress={() => {
-              console.log('➡️ Conjunto selecionado:', conjunto.id)
-              // navigation.navigate('Questions', { conjuntoId: conjunto.id })
+              navigation.navigate('Questions', {
+                conjuntoId: conjunto.id,
+                questoes: conjunto.questoes, 
+              })
             }}
           >
             <View style={styles.icon}>
@@ -87,7 +88,6 @@ export default function ConjuntoScreen() {
                 Conjunto {index + 1}
               </Text>
               <Text style={styles.cardSubtitle}>
-                ID: {conjunto.id}
               </Text>
             </View>
 

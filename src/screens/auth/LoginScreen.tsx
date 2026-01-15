@@ -29,7 +29,7 @@ export default function LoginScreen({ navigation }: any) {
         try {
             setLoading(true);
             await signIn(email, senha);
-            navigation.navigate('homescreen');
+            navigation.navigate('tabscreen');
         } catch (e: any) {
             showAlert('Erro', e.message);
         } finally {

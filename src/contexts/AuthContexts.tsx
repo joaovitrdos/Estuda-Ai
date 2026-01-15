@@ -1,7 +1,6 @@
 import { createContext, useEffect, useState } from 'react'
 import AsyncStorage from '@react-native-async-storage/async-storage'
 
-/* ===== Interfaces ===== */
 interface User {
   id: number
   name: string
@@ -14,8 +13,17 @@ interface Tema {
   conclusao: boolean
 }
 
-interface Conjunto {
+interface Questao {
+  questao: string
+  alternativa1: string
+  alternativa2: string
+  alternativa3: string
+  alternativa4: string
+}
+
+interface ConjuntoFormatado {
   id: number
+  questoes: Questao[]
 }
 
 interface AuthContextData {
@@ -31,14 +39,13 @@ interface AuthContextData {
   createTema(tema: string): Promise<any>
   listarTemas(): Promise<Tema[]>
   setTemaAtual(id: number): Promise<void>
-  listaConjuntos(temaId: number): Promise<Conjunto[]>
+  listaConjuntos(temaId: number): Promise<ConjuntoFormatado[]>
 }
 
 export const AuthContext = createContext<AuthContextData>(
   {} as AuthContextData
 )
 
-/* ===== Provider ===== */
 export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [user, setUser] = useState<User | null>(null)
   const [token, setToken] = useState<string | null>(null)
@@ -47,7 +54,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [avatarId, setAvatarId] = useState<number>(0)
   const [temaId, setTemaId] = useState<number | null>(null)
 
-  /* ===== Avatares ===== */
   const avatars = [
     require('../styles/avatar/1.jpg'),
     require('../styles/avatar/2.jpg'),
@@ -63,7 +69,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     require('../styles/avatar/12.jpg'),
   ]
 
-  /* ===== Load Storage ===== */
   useEffect(() => {
     async function loadStorage() {
       const userStorage = await AsyncStorage.getItem('@user')
@@ -90,7 +95,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     loadStorage()
   }, [])
 
-  /* ===== Auth ===== */
   async function signIn(email: string, senha: string) {
     const response = await fetch('http://localhost:8000/api/login', {
       method: 'POST',
@@ -160,7 +164,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setTemaId(null)
   }
 
-  /* ===== Avatar ===== */
   async function updateAvatar(index: number) {
     if (!token) return
 
@@ -180,20 +183,25 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.setItem('@avatarId', String(index))
   }
 
-  /* ===== Temas ===== */
   async function createTema(tema: string) {
-    if (!token) return
+    if (!token) throw new Error('Usuário não autenticado')
 
     const response = await fetch(
       `http://localhost:8000/api/gerarOuBuscarTema?tema=${encodeURIComponent(tema)}`,
       {
         method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
       }
     )
 
     const data = await response.json()
-    if (!data.success) throw new Error(data.message || 'Erro ao criar tema')
+
+    if (data.status !== 'success') {
+      throw new Error(data.message || 'Erro ao criar tema')
+    }
 
     return data
   }
@@ -217,13 +225,11 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.setItem('@temaId', String(id))
   }
 
-async function listaConjuntos(temaId: number): Promise<Conjunto[]> {
+ async function listaConjuntos(temaId: number): Promise<ConjuntoFormatado[]> {
   if (!token) throw new Error('Usuário não autenticado')
 
-  console.log('📤 Enviando temaId para API:', temaId)
-
   const response = await fetch(
-    `http://localhost:8000/api/questoesTema?temaId=${temaId}`,
+    `http://localhost:8000/api/questoesTema?id=${temaId}`,
     {
       method: 'GET',
       headers: {
@@ -234,24 +240,27 @@ async function listaConjuntos(temaId: number): Promise<Conjunto[]> {
   )
 
   const data = await response.json()
+  const conjuntos: ConjuntoFormatado[] = []
 
-  console.log('📥 Resposta da API questoesTema:', data)
+  Object.values(data).forEach((conjunto: any) => {
+    const questoes = Object.keys(conjunto)
+      .filter(
+        key =>
+          key.startsWith('questao') &&
+          typeof conjunto[key] === 'object' &&
+          conjunto[key].questao // 👈 garante que é questão válida
+      )
+      .map(key => conjunto[key])
 
-  // 🔥 GARANTIA TOTAL DE RETORNO
-  if (Array.isArray(data)) {
-    return data
-  }
+    conjuntos.push({
+      id: conjunto.id,
+      questoes,
+    })
+  })
 
-  if (data.conjuntos && Array.isArray(data.conjuntos)) {
-    return data.conjuntos
-  }
-
-  if (data.data && Array.isArray(data.data)) {
-    return data.data
-  }
-
-  return []
+  return conjuntos
 }
+
 
   return (
     <AuthContext.Provider
@@ -268,7 +277,7 @@ async function listaConjuntos(temaId: number): Promise<Conjunto[]> {
         createTema,
         listarTemas,
         setTemaAtual,
-        listaConjuntos,
+        listaConjuntos
       }}
     >
       {children}
