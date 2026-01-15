@@ -53,6 +53,10 @@ export default function ProfileScreen({ navigation }: any) {
     }
   };
 
+  const handleResetPassword = () => {
+    navigation.navigate('resetpassword');
+  }
+
   return (
     <View style={styles.container}>
       <BackButton titleText="Perfil" />
@@ -111,6 +115,12 @@ export default function ProfileScreen({ navigation }: any) {
             </View>
           </View>
         </Modal>
+
+        <Button
+          onPress={handleResetPassword}
+          title="Redefinir Senha"
+          disabled={loading}
+        />
 
         <ButtonCancel
           onPress={handleLogout}

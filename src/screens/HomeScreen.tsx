@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from 'react-native'
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity, RefreshControl } from 'react-native'
 import { useContext, useEffect, useState } from 'react'
 import { Theme } from '../styles/themes/themes'
 import Mensagem from '../components/Mensagem'
@@ -13,24 +13,31 @@ interface Tema {
 }
 
 export default function HomeScreen() {
-  const { listarTemas, setTemaAtual } = useContext(AuthContext)
+  const { listarTemas } = useContext(AuthContext)
   const [themes, setThemes] = useState<Tema[]>([])
+  const [refreshing, setRefreshing] = useState(false)
   const navigation = useNavigation<any>()
 
-  useEffect(() => {
-    async function carregarTemas() {
-      try {
-        const data = await listarTemas()
-        setThemes(data)
-      } catch (error) {
-        console.error('Erro ao listar temas:', error)
-      }
+  const carregarTemas = async () => {
+    try {
+      const data = await listarTemas()
+      setThemes(data)
+    } catch (error) {
+      console.error('Erro ao listar temas:', error)
     }
+  }
 
+  useEffect(() => {
     carregarTemas()
   }, [])
 
-  async function handleTemaPress(id: number) {
+  const onRefresh = async () => {
+    setRefreshing(true)
+    await carregarTemas()
+    setRefreshing(false)
+  }
+
+  const handleTemaPress = (id: number) => {
     navigation.getParent()?.navigate('Conjunto', { temaId: id })
   }
 
@@ -46,6 +53,15 @@ export default function HomeScreen() {
       <ScrollView
         showsVerticalScrollIndicator={false}
         contentContainerStyle={{ padding: 15, paddingBottom: 30 }}
+        refreshControl={
+          <RefreshControl
+            refreshing={refreshing}
+            onRefresh={onRefresh}
+            tintColor={Theme.colors.background}
+            colors={[Theme.colors.background]}
+            progressBackgroundColor={Theme.colors.primary}
+          />
+        }
       >
         {themes.map(theme => (
           <TouchableOpacity
@@ -72,7 +88,6 @@ export default function HomeScreen() {
     </View>
   )
 }
-
 
 const styles = StyleSheet.create({
   container: {
@@ -107,7 +122,7 @@ const styles = StyleSheet.create({
     width: 52,
     height: 52,
     borderRadius: 26,
-   backgroundColor: 'rgba(255,255,255,0.25)',
+    backgroundColor: 'rgba(255,255,255,0.25)',
     justifyContent: 'center',
     alignItems: 'center',
     marginRight: 14,

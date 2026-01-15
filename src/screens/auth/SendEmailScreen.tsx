@@ -20,34 +20,35 @@ import { BackButton } from '../../components/Backbutton';
 import { AuthContext } from '../../contexts/AuthContexts';
 import { useAlert } from '../../hooks/useAlertModal';
 
-const registerSchema = z.object({
-  nome: z.string().nonempty('Nome é obrigatório'),
+const emailSchema = z.object({
   email: z.string().email('Email inválido').nonempty('Email é obrigatório'),
-  senha: z.string().min(8, 'A senha deve ter no mínimo 8 caracteres').nonempty('Senha é obrigatória'),
 });
 
-type RegisterFormData = z.infer<typeof registerSchema>;
+type EmailFormData = z.infer<typeof emailSchema>;
 
-export default function RegisterScreen({ navigation }: any) {
-  const { signUp } = React.useContext(AuthContext);
+export default function SendEmailScreen({ navigation }: any) {
+  const { sendResetEmail } = React.useContext(AuthContext);
   const { showAlert } = useAlert();
 
   const {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: { nome: '', email: '', senha: '' },
+  } = useForm<EmailFormData>({
+    resolver: zodResolver(emailSchema),
+    defaultValues: { email: '' },
   });
 
-  const onSubmit = async (data: RegisterFormData) => {
+  const onSubmit = async (data: EmailFormData) => {
     try {
-      await signUp(data.nome, data.email, data.senha);
-      showAlert('Sucesso', 'Conta criada com sucesso');
-      navigation.navigate('loginscreen');
+      await sendResetEmail(data.email);
+      showAlert(
+        'Sucesso',
+        'Se este email estiver cadastrado, você receberá um link para redefinir a senha.'
+      );
+      navigation.navigate('emailSentScreen'); // opcional, tela de confirmação
     } catch (error: any) {
-      showAlert('Erro', error.message || 'Erro ao criar conta');
+      showAlert('Erro', error.message || 'Falha ao enviar email');
     }
   };
 
@@ -68,27 +69,11 @@ export default function RegisterScreen({ navigation }: any) {
               source={require('../../styles/icons/logo_sub.png')}
               style={styles.logo}
             />
-            <Text style={styles.title}>Cadastrar</Text>
+            <Text style={styles.title}>Redefinir Senha</Text>
             <Text style={styles.subtitle}>
-              Você terá respostas mais rápidas e precisas e muito inteligentes.
+              Informe seu email para receber o link de redefinição.
             </Text>
           </View>
-
-          <Controller
-            control={control}
-            name="nome"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                placeholder="Nome"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                disabled={isSubmitting}
-                showSoftInputOnFocus={!isSubmitting}
-              />
-            )}
-          />
-          {errors.nome && <Text style={styles.error}>{errors.nome.message}</Text>}
 
           <Controller
             control={control}
@@ -107,33 +92,10 @@ export default function RegisterScreen({ navigation }: any) {
           />
           {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
 
-          <Controller
-            control={control}
-            name="senha"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                placeholder="Senha"
-                secureTextEntry
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                disabled={isSubmitting}
-                showSoftInputOnFocus={!isSubmitting}
-              />
-            )}
-          />
-          {errors.senha && <Text style={styles.error}>{errors.senha.message}</Text>}
-
           <Button
-            title={isSubmitting ? 'Carregando...' : 'Cadastrar'}
+            title={isSubmitting ? 'Enviando...' : 'Enviar Email'}
             onPress={handleSubmit(onSubmit)}
             disabled={isSubmitting}
-          />
-          <Divider />
-          <Button
-            title="Cadastrar-se com o Google"
-            onPress={() => {}}
-            icon={require('../../styles/icons/google.png')}
           />
         </ScrollView>
       </KeyboardAvoidingView>

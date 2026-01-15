@@ -35,6 +35,9 @@ interface AuthContextData {
   signIn(email: string, senha: string): Promise<void>
   signUp(nome: string, email: string, senha: string): Promise<void>
   signOut(): Promise<void>
+  sendResetEmail(email: string): Promise<void>
+  resetPasswordWithToken(token: string, newPassword: string): Promise<void>
+  changePassword(currentPassword: string, newPassword: string): Promise<void>
   updateAvatar(index: number): Promise<void>
   createTema(tema: string): Promise<any>
   listarTemas(): Promise<Tema[]>
@@ -164,6 +167,54 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setTemaId(null)
   }
 
+   async function sendResetEmail(email: string) {
+    const response = await fetch('http://localhost:8000/api/password/email', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({ email }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Erro ao enviar email');
+  }
+
+  async function resetPasswordWithToken(token: string, newPassword: string) {
+    const response = await fetch('http://localhost:8000/api/password/reset', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({ token, password: newPassword }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Erro ao redefinir senha');
+  }
+
+  async function changePassword(currentPassword: string, newPassword: string) {
+    if (!token) throw new Error('Usuário não autenticado');
+
+    const response = await fetch('http://localhost:8000/api/password/change', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        Authorization: `Bearer ${token}`,
+        Accept: 'application/json',
+      },
+      body: JSON.stringify({
+        current_password: currentPassword,
+        new_password: newPassword,
+      }),
+    });
+
+    const data = await response.json();
+    if (!response.ok) throw new Error(data.message || 'Erro ao alterar senha');
+  }
+
   async function updateAvatar(index: number) {
     if (!token) return
 
@@ -273,6 +324,9 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         signIn,
         signUp,
         signOut,
+        sendResetEmail,
+        resetPasswordWithToken,
+        changePassword,
         updateAvatar,
         createTema,
         listarTemas,

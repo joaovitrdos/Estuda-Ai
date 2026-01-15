@@ -11,43 +11,54 @@ import {
 import { useForm, Controller } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
-
 import { Theme } from '../../styles/themes/themes';
 import { Input } from '../../components/input';
 import { Button } from '../../components/Button';
-import { Divider } from '../../components/Divider';
 import { BackButton } from '../../components/Backbutton';
 import { AuthContext } from '../../contexts/AuthContexts';
 import { useAlert } from '../../hooks/useAlertModal';
 
-const registerSchema = z.object({
-  nome: z.string().nonempty('Nome é obrigatório'),
-  email: z.string().email('Email inválido').nonempty('Email é obrigatório'),
-  senha: z.string().min(8, 'A senha deve ter no mínimo 8 caracteres').nonempty('Senha é obrigatória'),
-});
+const changePasswordSchema = z
+  .object({
+    currentPassword: z
+      .string()
+      .nonempty('Senha atual é obrigatória'),
+    newPassword: z
+      .string()
+      .min(8, 'A nova senha deve ter no mínimo 8 caracteres'),
+    confirmNewPassword: z.string().nonempty('Confirme a nova senha'),
+  })
+  .refine((data) => data.newPassword === data.confirmNewPassword, {
+    message: "As senhas não coincidem",
+    path: ["confirmNewPassword"],
+  });
 
-type RegisterFormData = z.infer<typeof registerSchema>;
+type ChangePasswordFormData = z.infer<typeof changePasswordSchema>;
 
-export default function RegisterScreen({ navigation }: any) {
-  const { signUp } = React.useContext(AuthContext);
+export default function ResetUserPasswordScreen({ navigation }: any) {
+  const { changePassword } = React.useContext(AuthContext); // deve existir no AuthContext
   const { showAlert } = useAlert();
 
   const {
     control,
     handleSubmit,
     formState: { errors, isSubmitting },
-  } = useForm<RegisterFormData>({
-    resolver: zodResolver(registerSchema),
-    defaultValues: { nome: '', email: '', senha: '' },
+  } = useForm<ChangePasswordFormData>({
+    resolver: zodResolver(changePasswordSchema),
+    defaultValues: {
+      currentPassword: '',
+      newPassword: '',
+      confirmNewPassword: '',
+    },
   });
 
-  const onSubmit = async (data: RegisterFormData) => {
+  const onSubmit = async (data: ChangePasswordFormData) => {
     try {
-      await signUp(data.nome, data.email, data.senha);
-      showAlert('Sucesso', 'Conta criada com sucesso');
-      navigation.navigate('loginscreen');
+      await changePassword(data.currentPassword, data.newPassword);
+      showAlert('Sucesso', 'Senha alterada com sucesso!');
+      navigation.goBack();
     } catch (error: any) {
-      showAlert('Erro', error.message || 'Erro ao criar conta');
+      showAlert('Erro', error.message || 'Falha ao alterar senha');
     }
   };
 
@@ -68,51 +79,18 @@ export default function RegisterScreen({ navigation }: any) {
               source={require('../../styles/icons/logo_sub.png')}
               style={styles.logo}
             />
-            <Text style={styles.title}>Cadastrar</Text>
+            <Text style={styles.title}>Alterar Senha</Text>
             <Text style={styles.subtitle}>
-              Você terá respostas mais rápidas e precisas e muito inteligentes.
+              Insira sua senha atual e escolha uma nova senha segura.
             </Text>
           </View>
 
           <Controller
             control={control}
-            name="nome"
+            name="currentPassword"
             render={({ field: { onChange, onBlur, value } }) => (
               <Input
-                placeholder="Nome"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                disabled={isSubmitting}
-                showSoftInputOnFocus={!isSubmitting}
-              />
-            )}
-          />
-          {errors.nome && <Text style={styles.error}>{errors.nome.message}</Text>}
-
-          <Controller
-            control={control}
-            name="email"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                placeholder="Email"
-                keyboardType="email-address"
-                value={value}
-                onChangeText={onChange}
-                onBlur={onBlur}
-                disabled={isSubmitting}
-                showSoftInputOnFocus={!isSubmitting}
-              />
-            )}
-          />
-          {errors.email && <Text style={styles.error}>{errors.email.message}</Text>}
-
-          <Controller
-            control={control}
-            name="senha"
-            render={({ field: { onChange, onBlur, value } }) => (
-              <Input
-                placeholder="Senha"
+                placeholder="Senha Atual"
                 secureTextEntry
                 value={value}
                 onChangeText={onChange}
@@ -122,18 +100,52 @@ export default function RegisterScreen({ navigation }: any) {
               />
             )}
           />
-          {errors.senha && <Text style={styles.error}>{errors.senha.message}</Text>}
+          {errors.currentPassword && (
+            <Text style={styles.error}>{errors.currentPassword.message}</Text>
+          )}
+
+          <Controller
+            control={control}
+            name="newPassword"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                placeholder="Nova Senha"
+                secureTextEntry
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                disabled={isSubmitting}
+                showSoftInputOnFocus={!isSubmitting}
+              />
+            )}
+          />
+          {errors.newPassword && (
+            <Text style={styles.error}>{errors.newPassword.message}</Text>
+          )}
+
+          <Controller
+            control={control}
+            name="confirmNewPassword"
+            render={({ field: { onChange, onBlur, value } }) => (
+              <Input
+                placeholder="Confirmar Nova Senha"
+                secureTextEntry
+                value={value}
+                onChangeText={onChange}
+                onBlur={onBlur}
+                disabled={isSubmitting}
+                showSoftInputOnFocus={!isSubmitting}
+              />
+            )}
+          />
+          {errors.confirmNewPassword && (
+            <Text style={styles.error}>{errors.confirmNewPassword.message}</Text>
+          )}
 
           <Button
-            title={isSubmitting ? 'Carregando...' : 'Cadastrar'}
+            title={isSubmitting ? 'Alterando...' : 'Alterar Senha'}
             onPress={handleSubmit(onSubmit)}
             disabled={isSubmitting}
-          />
-          <Divider />
-          <Button
-            title="Cadastrar-se com o Google"
-            onPress={() => {}}
-            icon={require('../../styles/icons/google.png')}
           />
         </ScrollView>
       </KeyboardAvoidingView>

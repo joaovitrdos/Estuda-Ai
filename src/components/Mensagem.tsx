@@ -1,5 +1,17 @@
+
 import React, { useState, useContext } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Modal } from 'react-native';
+import {
+  View,
+  Text,
+  StyleSheet,
+  Image,
+  TouchableOpacity,
+  Modal,
+} from 'react-native';
+import { useForm, Controller } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import * as z from 'zod';
+
 import { Theme } from '../styles/themes/themes';
 import { Input } from './input';
 import { ButtonCancel } from './ButtonCancel';
@@ -23,50 +35,50 @@ const avatars = [
   require('../styles/avatar/12.jpg'),
 ];
 
+const temaSchema = z.object({
+  tema: z.string().nonempty('Informe um tema válido'),
+});
+
+type TemaForm = z.infer<typeof temaSchema>;
+
 export default function Mensagem() {
   const { showAlert } = useAlert();
   const { user, avatarId, createTema } = useContext(AuthContext);
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [tema, setTema] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleGenerate = async () => {
-  if (!tema.trim()) {
-    showAlert('Atenção', 'Informe um tema válido');
-    return;
-  }
+  const {
+    control,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<TemaForm>({
+    resolver: zodResolver(temaSchema),
+    defaultValues: { tema: '' },
+  });
 
-  try {
-    setLoading(true);
+  const onSubmit = async (data: TemaForm) => {
+    try {
+      setLoading(true);
+      const temaCriado = await createTema(data.tema);
+      await notifyIfBackground(
+        'Tema gerado!',
+        'Suas questões já estão prontas.'
+      );
 
-    const temaCriado = await createTema(tema);
-
-    await notifyIfBackground(
-      '🎉 Tema gerado!',
-      'Suas questões já estão prontas.'
-    );
-
-    showAlert(
-      'Sucesso',
-      'Tema gerado com sucesso! Estamos preparando as questões...'
-    );
-
-    setTema('');
-    setModalVisible(false);
-
-    // 🔑 aqui você já tem o ID
-    console.log('Tema ID:', temaCriado.id);
-
-  } catch (err: any) {
-    showAlert(
-      'Erro',
-      err.message || 'Não foi possível gerar o tema'
-    );
-  } finally {
-    setLoading(false);
-  }
-};
+      showAlert(
+        'Sucesso',
+        'Tema gerado com sucesso! Estamos preparando as questões...'
+      );
+      reset(); 
+      setModalVisible(false);
+    } catch (err: any) {
+      showAlert('Erro', err.message || 'Não foi possível gerar o tema');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <View style={styles.container}>
@@ -101,20 +113,30 @@ export default function Mensagem() {
           <View style={styles.modalContent}>
             <Text style={styles.modalTitle}>Adicionar o Tema</Text>
 
-            <Input
-              placeholder="O que você quer estudar?"
-              value={tema}
-              onChangeText={setTema}
-              multiline
-              numberOfLines={3}
-              disabled={loading}
-              showSoftInputOnFocus={!loading}
+            <Controller
+              control={control}
+              name="tema"
+              render={({ field: { onChange, onBlur, value } }) => (
+                <Input
+                  placeholder="O que você quer estudar?"
+                  value={value}
+                  onChangeText={onChange}
+                  onBlur={onBlur}
+                  multiline
+                  numberOfLines={3}
+                  disabled={loading || isSubmitting}
+                  showSoftInputOnFocus={!loading && !isSubmitting}
+                />
+              )}
             />
+            {errors.tema && (
+              <Text style={styles.error}>{errors.tema.message}</Text>
+            )}
 
             <Button
-              onPress={handleGenerate}
-              title={loading ? 'Adicionando...' : 'Adicionar aos Estudos'}
-              disabled={loading}
+              onPress={handleSubmit(onSubmit)}
+              title={loading || isSubmitting ? 'Adicionando...' : 'Adicionar aos Estudos'}
+              disabled={loading || isSubmitting}
             />
 
             <ButtonCancel
@@ -205,5 +227,10 @@ const styles = StyleSheet.create({
     color: Theme.colors.primary,
     textAlign: 'center',
     padding: 15,
+  },
+  error: {
+    color: 'red',
+    marginBottom: 10,
+    marginLeft: 5,
   },
 });

@@ -4,9 +4,10 @@ import OptionsScreen from "../../src/screens/OptionsScreen";
 import SobreScreen from "../../src/screens/SobreScreen";
 import ConjuntoScreen from "../../src/screens/ConjuntoScreen";
 import TabRoutes from './tab.routes';
-import LoginScreen from "../../src/screens/auth/LoginScreen";
-import RegisterScreen from "../../src/screens/auth/RegisterScreen";
 import QuestionsScreen from '../../src/screens/QuestionsScreen';
+import ResetNewPasswordScreen from '../../src/screens/ResetPasswordScreen';
+import ResetPasswordScreen from '../../src/screens/ResetPasswordScreen';
+
 
 const Stack = createStackNavigator();
 
@@ -24,8 +25,7 @@ export default function StackAuthRoutes() {
       <Stack.Screen name="Questions" component={QuestionsScreen} />
       <Stack.Screen name="options" component={OptionsScreen} />
       <Stack.Screen name="sobre" component={SobreScreen} />
-      <Stack.Screen name="loginscreen" component={LoginScreen} />
-      <Stack.Screen name="registerscreen" component={RegisterScreen} />
+      <Stack.Screen name="resetpassword" component={ResetPasswordScreen} />
     </Stack.Navigator>
   );
 }
