@@ -13,17 +13,28 @@ import { BackButton } from '../components/Backbutton'
 import { AuthContext } from '../contexts/AuthContexts'
 import { useRoute, useNavigation } from '@react-navigation/native'
 
+/* ===== Tipagens ===== */
+type RawQuestao = {
+  questao: string
+  alternativa1: string
+  alternativa2: string
+  alternativa3: string
+  alternativa4: string
+}
+
 interface Conjunto {
   id: number
-  questoes: any[]
+  questoes: RawQuestao[]
 }
 
 export default function ConjuntoScreen() {
   const route = useRoute<any>()
   const navigation = useNavigation<any>()
-  const temaId = route.params?.temaId
+
+  const temaId: number | undefined = route.params?.temaId
 
   const { listaConjuntos, setTemaAtual } = useContext(AuthContext)
+
   const [conjuntos, setConjuntos] = useState<Conjunto[]>([])
   const [loading, setLoading] = useState(true)
 
@@ -32,12 +43,14 @@ export default function ConjuntoScreen() {
       setLoading(false)
       return
     }
+
     setTemaAtual(temaId)
 
     async function carregarConjuntos() {
       try {
-        console.log('🚀 Buscando conjuntos para temaId:', temaId)
-        const data = await listaConjuntos(temaId)
+        setLoading(true)
+
+        const data = await listaConjuntos(temaId!)
         setConjuntos(data)
       } catch (error) {
       } finally {
@@ -66,35 +79,38 @@ export default function ConjuntoScreen() {
         </Text>
       )}
 
-      <ScrollView showsVerticalScrollIndicator={false}>
-        {conjuntos.map((conjunto, index) => (
-          <TouchableOpacity
-            key={conjunto.id}
-            style={styles.card}
-            activeOpacity={0.85}
-            onPress={() => {
-              navigation.navigate('Questions', {
-                conjuntoId: conjunto.id,
-                questoes: conjunto.questoes, 
-              })
-            }}
-          >
-            <View style={styles.icon}>
-              <Feather name="layers" size={22} color="#fff" />
-            </View>
+      {!loading && (
+        <ScrollView showsVerticalScrollIndicator={false}>
+          {conjuntos.map((conjunto, index) => (
+            <TouchableOpacity
+              key={conjunto.id}
+              style={styles.card}
+              activeOpacity={0.85}
+              onPress={() =>
+                navigation.navigate('Questions', {
+                  conjuntoId: conjunto.id,
+                  questoes: conjunto.questoes,
+                  
+                })
+              }
+            >
+              <View style={styles.icon}>
+                <Feather name="layers" size={22} color="#fff" />
+              </View>
 
-            <View style={{ flex: 1 }}>
-              <Text style={styles.cardTitle}>
-                Conjunto {index + 1}
-              </Text>
-              <Text style={styles.cardSubtitle}>
-              </Text>
-            </View>
+              <View style={{ flex: 1 }}>
+                <Text style={styles.cardTitle}>
+                  Conjunto {index + 1}
+                </Text>
+                <Text style={styles.cardSubtitle}>
+                </Text>
+              </View>
 
-            <Feather name="chevron-right" size={22} color="#fff" />
-          </TouchableOpacity>
-        ))}
-      </ScrollView>
+              <Feather name="chevron-right" size={22} color="#fff" />
+            </TouchableOpacity>
+          ))}
+        </ScrollView>
+      )}
     </View>
   )
 }

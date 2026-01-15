@@ -4,23 +4,24 @@
     "slug": "estuda-ai",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/icon.png",
+    "icon": "./src/styles/icons/logo.png",
     "userInterfaceStyle": "dark",
     "newArchEnabled": true,
 
     "splash": {
-      "image": "./assets/splash-icon.png",
+      "image": "./src/styles/icons/logo.png",
       "resizeMode": "contain",
       "backgroundColor": "#000"
     },
 
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "backgroundColor": "#000"
     },
 
     "android": {
       "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
+        "foregroundImage": "./src/styles/icons/logo.png",
         "backgroundColor": "#000"
       },
       "edgeToEdgeEnabled": true,
@@ -28,13 +29,10 @@
     },
 
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./src/styles/icons/logo.png",
+      "backgroundColor": "#000"
     },
 
-    "plugins": [
-      "expo-router",
-      "expo-web-browser",
-      "expo-notifications"
-    ]
+    "plugins": ["expo-router", "expo-web-browser", "expo-notifications"]
   }
 }

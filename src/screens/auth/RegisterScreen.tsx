@@ -61,7 +61,7 @@ export default function RegisterScreen({ navigation }: any) {
                 >
                     <View style={styles.header}>
                         <Image
-                            source={require('../../../assets/favicon.png')}
+                            source={require('../../styles/icons/logo_sub.png')}
                             style={styles.logo}
                         />
                         <Text style={styles.title}>Cadastrar</Text>

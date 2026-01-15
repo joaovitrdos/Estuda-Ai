@@ -49,7 +49,7 @@ export default function LoginScreen({ navigation }: any) {
                 >
                     <View style={styles.header}>
                         <Image
-                            source={require('../../../assets/favicon.png')}
+                            source={require('../../styles/icons/logo_sub.png')}
                             style={{ width: 100, height: 100, marginBottom: 16 }}
                         />
                         <Text style={styles.title}>Entrar ou Cadastrar</Text>
