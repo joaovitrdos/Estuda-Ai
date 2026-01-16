@@ -1,12 +1,12 @@
-import { View, Text, StyleSheet, Image, TouchableOpacity, Modal} from 'react-native';
-import { Theme } from '../styles/themes/themes';
-import { BackButton } from '../components/Backbutton';
-import { useContext, useState } from 'react';
-import { AuthContext } from '../contexts/AuthContexts';
-import { Feather } from '@expo/vector-icons';
-import { ButtonCancel } from '../components/ButtonCancel';
-import { useAlert } from '../hooks/useAlertModal';
-import { Button } from '../components/Button';
+import React, { useContext, useState } from 'react'
+import { View, Text, StyleSheet, Image, TouchableOpacity, Modal } from 'react-native'
+import { Theme } from '../styles/themes/themes'
+import { BackButton } from '../components/Backbutton'
+import { AuthContext } from '../contexts/AuthContexts'
+import { Feather } from '@expo/vector-icons'
+import { Button } from '../components/Button'
+import { ButtonCancel } from '../components/ButtonCancel'
+import { useAlert } from '../hooks/useAlertModal'
 
 const avatars = [
   require('../styles/avatar/1.jpg'),
@@ -21,50 +21,49 @@ const avatars = [
   require('../styles/avatar/10.jpg'),
   require('../styles/avatar/11.jpg'),
   require('../styles/avatar/12.jpg'),
-];
+]
 
 export default function ProfileScreen({ navigation }: any) {
-
-  const { showAlert } = useAlert();
-  const { user, avatarId, updateAvatar, signOut } = useContext(AuthContext);
-
-  const [modalVisible, setModalVisible] = useState(false);
-  const [selectedAvatar, setSelectedAvatar] = useState(avatarId);
-  const [loading, setLoading] = useState(false);
+  const { showAlert } = useAlert()
+  const { user, avatarId, updateAvatar, signOut } = useContext(AuthContext)
+  const [modalVisible, setModalVisible] = useState(false)
+  const [selectedAvatar, setSelectedAvatar] = useState(avatarId)
+  const [loading, setLoading] = useState(false)
 
   const handleConfirm = async () => {
     try {
-      await updateAvatar(selectedAvatar);
-
-      showAlert('Sucesso', 'Avatar atualizado com sucesso');
-      setModalVisible(false);
-
+      await updateAvatar(selectedAvatar)
+      showAlert('Sucesso', 'Avatar atualizado com sucesso')
+      setModalVisible(false)
     } catch {
-      showAlert('Erro', 'Não foi possível atualizar o avatar.');
+      showAlert('Erro', 'Não foi possível atualizar o avatar.')
     }
-  };
+  }
 
   const handleLogout = async () => {
     try {
-      await signOut();
-      showAlert('Até logo 👋', 'Você saiu da sua conta');
+      await signOut()
+      showAlert('Até logo 👋', 'Você saiu da sua conta')
     } catch {
-      showAlert('Erro', 'Não foi possível sair da conta.');
+      showAlert('Erro', 'Não foi possível sair da conta.')
     }
-  };
+  }
 
   const handleResetPassword = () => {
-    navigation.navigate('resetpassword');
+    navigation.navigate('resetpassword')
   }
 
   return (
     <View style={styles.container}>
-      <BackButton titleText="Perfil" />
+      <View style={styles.header}>
+        <BackButton showTitle 
+                titleText="Perfil"
+                showBackButton={true}/>
+      </View>
 
       <View style={styles.content}>
         <View style={styles.avatarContainer}>
           <Image source={avatars[avatarId]} style={styles.avatar} />
-
           <TouchableOpacity
             style={styles.editButton}
             onPress={() => setModalVisible(true)}
@@ -100,12 +99,7 @@ export default function ProfileScreen({ navigation }: any) {
                 ))}
               </View>
 
-              <Button
-                onPress={handleConfirm}
-                title="Confirmar"
-                disabled={loading}
-              />
-
+              <Button onPress={handleConfirm} title="Confirmar" disabled={loading} />
               <ButtonCancel
                 onPress={() => setModalVisible(false)}
                 textColor={Theme.colors.red}
@@ -116,12 +110,12 @@ export default function ProfileScreen({ navigation }: any) {
           </View>
         </Modal>
 
-        <Button
-          onPress={handleResetPassword}
-          title="Redefinir Senha"
-          disabled={loading}
+        <Button 
+        onPress={handleResetPassword} 
+        title="Redefinir Senha" 
+        disabled={loading} 
+        style={{width: '100%'}}
         />
-
         <ButtonCancel
           onPress={handleLogout}
           textColor={Theme.colors.red}
@@ -130,18 +124,20 @@ export default function ProfileScreen({ navigation }: any) {
         />
       </View>
     </View>
-  );
+  )
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: Theme.colors.background,
-    alignItems: 'center',
     padding: 15,
-
+  },
+  header: {
+    
   },
   content: {
+    flex: 1,
     width: '100%',
     alignItems: 'center',
     paddingTop: 30,
@@ -157,26 +153,12 @@ const styles = StyleSheet.create({
   name: {
     fontSize: Theme.fontSize.lg,
     fontWeight: 'bold',
-    color: Theme.colors.primary
+    color: Theme.colors.primary,
   },
   email: {
     fontSize: Theme.fontSize.sm,
     color: Theme.colors.text,
-    marginBottom: 20
-  },
-  logoutButton: {
-    marginTop: 20,
-    width: '100%',
-    paddingVertical: 14,
-    borderRadius: 8,
-    borderWidth: 1,
-    borderColor: 'red',
-    alignItems: 'center'
-  },
-  logoutText: {
-    color: 'red',
-    fontWeight: 'bold',
-    fontSize: Theme.fontSize.md
+    marginBottom: 20,
   },
   avatarContainer: {
     position: 'relative',
@@ -229,20 +211,4 @@ const styles = StyleSheet.create({
     height: 60,
     borderRadius: 30,
   },
-  closeButton: {
-    marginTop: 16,
-    width: '100%',
-    color: Theme.colors.text,
-    textAlign: 'center',
-    borderColor: Theme.colors.border,
-    borderWidth: 1,
-    padding: 10,
-    borderRadius: 8,
-  },
-  closeButtonCancel: {
-    color: Theme.colors.red,
-    textAlign: 'center',
-  },
-
-});
-
+})

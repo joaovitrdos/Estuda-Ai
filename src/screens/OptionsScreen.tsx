@@ -13,7 +13,7 @@ export default function OptionsScreen({ navigation }: any) {
             />
             <View style={styles.optionsContainer}>
                 <View style={styles.option}>
-                    <TouchableOpacity onPress={() => navigation.navigate('profilescreen')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('profile')}>
                         <Text style={styles.optionText}>Perfil</Text>
                     </TouchableOpacity>
                 </View>
@@ -24,7 +24,7 @@ export default function OptionsScreen({ navigation }: any) {
                     </TouchableOpacity>
                 </View>
                 <View style={styles.option}>
-                    <TouchableOpacity onPress={() => navigation.navigate('sobrescreen')}>
+                    <TouchableOpacity onPress={() => navigation.navigate('sobre')}>
                         <Text style={styles.optionText}>Sobre</Text>
                     </TouchableOpacity>
                 </View>

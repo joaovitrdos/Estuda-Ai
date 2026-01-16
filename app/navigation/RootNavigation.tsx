@@ -14,13 +14,13 @@ export function RootNavigator() {
   const { token, user, loading } = useContext(AuthContext)
 
   if (loading || (token && !user)) {
-    return <Loading />
+    return <><Loading /></>;
   }
 
   return (
     <NavigationContainer>
-      {/* {token && user ? <StackAuthRoutes /> : <StackRoutes />} */}
-      <StackAuthRoutes />
+      {token && user ? <StackAuthRoutes /> : <StackRoutes />}
+      {/* <StackAuthRoutes /> */}
     </NavigationContainer>
   )
 }

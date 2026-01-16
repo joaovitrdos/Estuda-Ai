@@ -38,7 +38,7 @@ export default function HomeScreen() {
   }
 
   const handleTemaPress = (id: number) => {
-    navigation.getParent()?.navigate('Conjunto', { temaId: id })
+    navigation.getParent()?.navigate('conjunto', { temaId: id })
   }
 
   return (
@@ -112,10 +112,9 @@ const styles = StyleSheet.create({
     borderRadius: 20,
     marginBottom: 16,
     elevation: 4,
-    shadowColor: '#000',
     shadowOpacity: 0.15,
     shadowRadius: 6,
-    shadowOffset: { width: 0, height: 4 },
+    boxShadow: "0px 2px 4px rgba(0,0,0,0.25)",
     backgroundColor: Theme.colors.blue,
   },
   iconContainer: {

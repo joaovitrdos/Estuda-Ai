@@ -1,5 +1,4 @@
 export const Theme = {
-  // Cores
   colors: {
     primary: '#ffffff',   
     background: '#212121',     
@@ -13,7 +12,6 @@ export const Theme = {
     dourado: '#fed731',
   },
 
-  // Fonts
  fonts: {
     regular: { fontFamily: 'System', fontWeight: '400' },
     medium: { fontFamily: 'System', fontWeight: '500' },
@@ -21,7 +19,6 @@ export const Theme = {
     heavy: { fontFamily: 'System', fontWeight: '800' },
   },
 
-  // Tamanhos de fontes
   fontSize: {
     xs: 12,
     sm: 14,

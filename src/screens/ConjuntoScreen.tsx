@@ -13,8 +13,7 @@ import { BackButton } from '../components/Backbutton'
 import { AuthContext } from '../contexts/AuthContexts'
 import { useRoute, useNavigation } from '@react-navigation/native'
 
-/* ===== Tipagens ===== */
-type RawQuestao = {
+type Questao = {
   questao: string
   alternativa1: string
   alternativa2: string
@@ -24,19 +23,22 @@ type RawQuestao = {
 
 interface Conjunto {
   id: number
-  questoes: RawQuestao[]
+  questoes: Questao[]
+  conclusao: number
 }
 
 export default function ConjuntoScreen() {
   const route = useRoute<any>()
   const navigation = useNavigation<any>()
-
   const temaId: number | undefined = route.params?.temaId
-
   const { listaConjuntos, setTemaAtual } = useContext(AuthContext)
 
   const [conjuntos, setConjuntos] = useState<Conjunto[]>([])
   const [loading, setLoading] = useState(true)
+
+  const getStatus = (conjunto: Conjunto) => ({
+    text: conjunto.conclusao === 0 ? 'Conjunto Pendente' : 'Concluído',
+  })
 
   useEffect(() => {
     if (!temaId) {
@@ -49,10 +51,14 @@ export default function ConjuntoScreen() {
     async function carregarConjuntos() {
       try {
         setLoading(true)
-
         const data = await listaConjuntos(temaId!)
-        setConjuntos(data)
+        const conjuntosFormatados = data.map((conjunto: any) => ({
+          ...conjunto,
+          conclusao: conjunto.conclusao ?? 0,
+        }))
+        setConjuntos(conjuntosFormatados)
       } catch (error) {
+        console.error(error)
       } finally {
         setLoading(false)
       }
@@ -60,6 +66,19 @@ export default function ConjuntoScreen() {
 
     carregarConjuntos()
   }, [temaId])
+
+  const canAccess = (index: number) => {
+    if (index === 0) return true
+    return conjuntos[index - 1]?.conclusao === 1
+  }
+
+  const handlePressConjunto = (conjunto: Conjunto, index: number) => {
+    if (!canAccess(index)) return
+    navigation.navigate('questions', {
+      conjuntoId: conjunto.id,
+      questoes: conjunto.questoes,
+    })
+  }
 
   return (
     <View style={styles.container}>
@@ -74,41 +93,39 @@ export default function ConjuntoScreen() {
       )}
 
       {!loading && conjuntos.length === 0 && (
-        <Text style={styles.infoText}>
-          Nenhum conjunto encontrado
-        </Text>
+        <Text style={styles.infoText}>Nenhum conjunto encontrado</Text>
       )}
 
       {!loading && (
         <ScrollView showsVerticalScrollIndicator={false}>
-          {conjuntos.map((conjunto, index) => (
-            <TouchableOpacity
-              key={conjunto.id}
-              style={styles.card}
-              activeOpacity={0.85}
-              onPress={() =>
-                navigation.navigate('Questions', {
-                  conjuntoId: conjunto.id,
-                  questoes: conjunto.questoes,
-                  
-                })
-              }
-            >
-              <View style={styles.icon}>
-                <Feather name="layers" size={22} color="#fff" />
-              </View>
+          {conjuntos.map((conjunto, index) => {
+            const status = getStatus(conjunto)
+            const disabled = !canAccess(index)
+            return (
+              <TouchableOpacity
+                key={conjunto.id}
+                style={[
+                  styles.card,
+                  disabled && { backgroundColor: Theme.colors.border },
+                ]}
+                activeOpacity={disabled ? 1 : 0.85}
+                onPress={() => handlePressConjunto(conjunto, index)}
+              >
+                <View style={styles.icon}>
+                  <Feather name="layers" size={22} color="#fff" />
+                </View>
 
-              <View style={{ flex: 1 }}>
-                <Text style={styles.cardTitle}>
-                  Conjunto {index + 1}
-                </Text>
-                <Text style={styles.cardSubtitle}>
-                </Text>
-              </View>
+                <View style={{ flex: 1 }}>
+                  <Text style={styles.cardTitle}>Conjunto {index + 1}</Text>
+                  <Text style={{ ...styles.cardSubtitle}}>
+                    {status.text}
+                  </Text>
+                </View>
 
-              <Feather name="chevron-right" size={22} color="#fff" />
-            </TouchableOpacity>
-          ))}
+                <Feather name="chevron-right" size={22} color="#fff" />
+              </TouchableOpacity>
+            )
+          })}
         </ScrollView>
       )}
     </View>
@@ -152,7 +169,7 @@ const styles = StyleSheet.create({
   },
   cardSubtitle: {
     fontSize: 14,
-    color: '#f1f1f1',
     marginTop: 2,
+    color: '#f1f1f1',
   },
 })

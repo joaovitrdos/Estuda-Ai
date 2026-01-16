@@ -21,8 +21,8 @@ export default function StackAuthRoutes() {
     >
       <Stack.Screen name="tabroutes" component={TabRoutes} />
       <Stack.Screen name="profile" component={ProfileScreen} />
-      <Stack.Screen name="Conjunto" component={ConjuntoScreen} />
-      <Stack.Screen name="Questions" component={QuestionsScreen} />
+      <Stack.Screen name="questions" component={QuestionsScreen} />
+      <Stack.Screen name="conjunto" component={ConjuntoScreen} />
       <Stack.Screen name="options" component={OptionsScreen} />
       <Stack.Screen name="sobre" component={SobreScreen} />
       <Stack.Screen name="resetpassword" component={ResetPasswordScreen} />

@@ -7,10 +7,8 @@ export async function notifyIfBackground(
 ) {
   const state = AppState.currentState;
 
-  // ❌ App aberto → não notifica
   if (state === 'active') return;
 
-  // ✅ App em background ou fechado
   await Notifications.scheduleNotificationAsync({
     content: {
       title,

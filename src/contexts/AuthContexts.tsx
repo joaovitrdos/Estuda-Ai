@@ -26,6 +26,17 @@ interface ConjuntoFormatado {
   questoes: Questao[]
 }
 
+function isQuestao(obj: any): obj is Questao {
+  return (
+    obj &&
+    typeof obj.questao === 'string' &&
+    typeof obj.alternativa1 === 'string' &&
+    typeof obj.alternativa2 === 'string' &&
+    typeof obj.alternativa3 === 'string' &&
+    typeof obj.alternativa4 === 'string'
+  )
+}
+
 interface AuthContextData {
   user: User | null
   token: string | null
@@ -167,7 +178,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setTemaId(null)
   }
 
-   async function sendResetEmail(email: string) {
+  async function sendResetEmail(email: string) {
     const response = await fetch('http://localhost:8000/api/password/email', {
       method: 'POST',
       headers: {
@@ -276,42 +287,42 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     await AsyncStorage.setItem('@temaId', String(id))
   }
 
- async function listaConjuntos(temaId: number): Promise<ConjuntoFormatado[]> {
-  if (!token) throw new Error('Usuário não autenticado')
+  async function listaConjuntos(temaId: number): Promise<ConjuntoFormatado[]> {
+    if (!token) throw new Error('Usuário não autenticado')
 
-  const response = await fetch(
-    `http://localhost:8000/api/questoesTema?id=${temaId}`,
-    {
-      method: 'GET',
-      headers: {
-        Authorization: `Bearer ${token}`,
-        Accept: 'application/json',
-      },
-    }
-  )
+    const response = await fetch(
+      `http://localhost:8000/api/quetoesTema?id=${temaId}`,
+      {
+        method: 'GET',
+        headers: {
+          Authorization: `Bearer ${token}`,
+          Accept: 'application/json',
+        },
+      }
+    )
 
-  const data = await response.json()
-  const conjuntos: ConjuntoFormatado[] = []
+    const data = await response.json()
+    const conjuntos: ConjuntoFormatado[] = []
+    
 
-  Object.values(data).forEach((conjunto: any) => {
-    const questoes = Object.keys(conjunto)
-      .filter(
-        key =>
-          key.startsWith('questao') &&
-          typeof conjunto[key] === 'object' &&
-          conjunto[key].questao // 👈 garante que é questão válida
-      )
-      .map(key => conjunto[key])
-
-    conjuntos.push({
-      id: conjunto.id,
-      questoes,
+    Object.values(data).forEach((conjunto: any) => {
+      const questoes: Questao[] = Object.values(conjunto)
+        .filter(
+          (value: any) =>
+            value &&
+            typeof value === 'object' &&
+            'questao' in value
+        )
+        .map((value: any) => value as Questao)
+      conjuntos.push({
+        id: conjunto.id,
+        questoes,
+      })
     })
-  })
+    console.log('DATA BRUTO:', JSON.stringify(data, null, 2))
 
-  return conjuntos
-}
-
+    return conjuntos
+  }
 
   return (
     <AuthContext.Provider
